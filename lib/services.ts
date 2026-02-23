@@ -7,7 +7,7 @@ export async function getServices(){
     return data as UserService[]
 }
 
-export async function getServiceByCategorty(category : string){
+export async function getServiceByCategory(category : string){
     const {data} = await supabase.from('services').select('*').eq('category', category)
 
     return data as UserService[]

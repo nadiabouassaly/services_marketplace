@@ -8,12 +8,12 @@ export type Profile = {
     rating : number
     profession : string
     email : string
-    services : UserService[]
+    services?: UserService[]
 }
 
 export type UserService = {
     id : number
-    //provider : Profile
+    provider?: Profile
     name : string
     description : string
     price : number
