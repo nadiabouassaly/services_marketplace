@@ -12,6 +12,7 @@ export type Profile = {
 }
 
 export type UserService = {
+    userprofile_id ?: string
     services_id : string
     provider?: Profile
     name : string
