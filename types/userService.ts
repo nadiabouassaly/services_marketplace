@@ -1,9 +1,9 @@
 export type Profile = {
-    firstName : string
-    middleName : string
-    lastName : string
-    userservice_id : number
-    dateOfbirth : Date
+    firstname : string
+    middlename : string
+    lastname : string
+    userprofile_id : string
+    dateofbirth : Date
     skills ?: string[]
     rating : number
     profession : string
@@ -12,7 +12,7 @@ export type Profile = {
 }
 
 export type UserService = {
-    services_id : number
+    services_id : string
     provider?: Profile
     name : string
     description : string
