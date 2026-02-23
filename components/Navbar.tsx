@@ -5,10 +5,8 @@ import { FaSearch } from 'react-icons/fa';
 
 export default function Navbar() {
   return (
-    <nav className="bg-white shadow p-4">
-      {/* Centered container */}
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        {/* Left: Logo */}
+    <nav className="bg-white shadow">
+      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         <Logo />
 
         {/* Center Search bar */}

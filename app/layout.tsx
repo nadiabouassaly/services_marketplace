@@ -18,8 +18,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <Navbar />
 
         {/* Page content */}
-        <main className="flex-1 p-6">
-          <div className="max-w-6xl mx-auto">{children}</div>
+        <main className="flex-1">
+          <div> {children} </div>
         </main>
       </body>
     </html>
