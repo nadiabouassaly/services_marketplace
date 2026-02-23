@@ -1,7 +1,6 @@
 //import {UserService} from '@/types/userServices'
 //import {getServices, getServiceByCategorty} from '@/lib/services'
 
-
 import Image from "next/image";
 
 export default function Home() {
