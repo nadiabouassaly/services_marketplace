@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FaSlidersH, FaBook, FaUser, FaBroom, FaDog } from 'react-icons/fa';
+import { FaSlidersH, FaBook, FaUser, FaBroom, FaDog, FaBaby, FaCar } from 'react-icons/fa';
 
 type CategoryButtonProps = {
   icon: React.ReactNode;
@@ -33,6 +33,8 @@ function CategoryButton({ icon, label, selected, onClick }: CategoryButtonProps)
 const categories = [
   { label: 'Tutoring', icon: <FaBook /> },
   { label: 'Elderly Care', icon: <FaUser /> },
-  { label: 'Cleaning Services', icon: <FaBroom /> },
+  { label: 'Home Maintenance', icon: <FaBroom /> },
   { label: 'Pet Care', icon: <FaDog /> },
+  { label: 'Babysitting', icon: <FaBaby/>},
+  { label: 'Transportation', icon: <FaCar/>},
 ];
