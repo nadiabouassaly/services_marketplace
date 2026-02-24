@@ -35,7 +35,7 @@ function CategoryButton({ icon, label, selected, onClick }: CategoryButtonProps)
 const categories = [
   { label: 'Tutoring', icon: <FaBook /> },
   { label: 'Elderly Care', icon: <FaUser /> },
-  { label: 'Cleaning Services', icon: <FaSoap /> },
+  { label: 'Home Maintenance', icon: <FaSoap /> },
   { label: 'Pet Care', icon: <FaDog /> },
 ];
 
