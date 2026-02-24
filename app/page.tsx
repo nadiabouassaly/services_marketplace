@@ -2,14 +2,10 @@ import Hero from '../components/Hero';
 import Sidebar from '../components/Sidebar';
 import Card from '../components/Card';
 import ServicesHeader from '../components/ServicesHeader';
+import {UserService, Profile} from '@/types/userService' 
+import {getServices, getServiceByCategory} from '@/lib/services'
 
-const cards = [
-  { title: "Dog Walking", description: "We walk your dog safely." },
-  { title: "Tutoring", description: "Math, Science, Languages." },
-  { title: "Elderly Care", description: "Compassionate care for loved ones." },
-  { title: "Service 4", description: "Description of service 4" },
-  { title: "Service 5", description: "Description of service 5" },
-];
+const services: UserService[] = await getServices() ;
 
 export default function HomePage() {
   return (
@@ -25,14 +21,16 @@ export default function HomePage() {
 
           {/* Cards */}
           <div className="flex-1">
-            <ServicesHeader count={cards.length} />
+            <ServicesHeader count={services.length} />
         
             <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Card title="Dog Walking" description="We walk your dog safely." />
-              <Card title="Tutoring" description="Math, Science, Languages." />
-              <Card title="Elderly Care" description="Compassionate care for loved ones." />
-              <Card title="Service 4" description="Description of service 4" />
-              <Card title="Service 5" description="Description of service 5" />
+              {services.map((card) => (
+                <Card key={card.services_id}
+                      name = {card.name}
+                      price = {card.price}
+                      description={card.description}
+                      />
+                ))}            
             </div>
           </div>
         </div>

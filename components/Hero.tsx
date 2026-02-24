@@ -7,7 +7,7 @@ export default function Hero() {
           </h1>
           <p className="text-lg text-gray-600">
             Browse peer-to-peer services in your community <br />
-            There's someone nearby to help :)
+            There&apos;s someone nearby to help :)
           </p>
         </div>
       </section>
