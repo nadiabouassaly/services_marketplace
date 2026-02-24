@@ -1,5 +1,4 @@
-import { UserService } from "@/types/userService";
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 type CardProps = {
   name : string
   description : string

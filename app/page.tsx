@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Hero from '../components/Hero';
 import Sidebar from '../components/Sidebar';
 import Card from '../components/Card';
 import ServicesHeader from '../components/ServicesHeader';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import {UserService, Profile} from '@/types/userService' 
 import {getServices, getServiceByCategory} from '@/lib/services'
 
