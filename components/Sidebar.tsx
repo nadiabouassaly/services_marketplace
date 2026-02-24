@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { FaSlidersH, FaBook, FaUser, FaSoap, FaDog } from 'react-icons/fa';
+import { FaSlidersH, FaBook, FaUser, FaSoap, FaDog, FaBroom, FaBaby, FaCar } from 'react-icons/fa';
 
 type CategoryButtonProps = {
   icon: React.ReactNode;
@@ -35,8 +35,10 @@ function CategoryButton({ icon, label, selected, onClick }: CategoryButtonProps)
 const categories = [
   { label: 'Tutoring', icon: <FaBook /> },
   { label: 'Elderly Care', icon: <FaUser /> },
-  { label: 'Home Maintenance', icon: <FaSoap /> },
+  { label: 'Home Maintenance', icon: <FaBroom /> },
   { label: 'Pet Care', icon: <FaDog /> },
+  { label: 'Babysitting', icon: <FaBaby/>},
+  { label: 'Transportation', icon: <FaCar/>},
 ];
 
 export default function Sidebar() {
