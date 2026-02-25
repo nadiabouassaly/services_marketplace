@@ -34,6 +34,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                       name = {card.name}
                       price = {card.price}
                       description={card.description}
+                      category={card.category}
                       />
                 ))}            
             </div>
