@@ -11,7 +11,7 @@ export default async function HomePage() {
   const services: UserService[] = await getServices() ;
 
   return (
-    <div className="w-full">
+    <div className="w-full pb-5">
       {/* Hero section */}
       <Hero />
 
