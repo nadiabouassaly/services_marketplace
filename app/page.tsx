@@ -14,7 +14,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const services: UserService[] = await getServiceByCategory(filters);
 
   return (
-    <div className="w-full">
+    <div className="w-full pb-5">
       {/* Hero section */}
       <Hero />
 
