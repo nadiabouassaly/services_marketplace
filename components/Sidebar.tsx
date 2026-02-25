@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from 'react';
 import { FaSlidersH, FaBook, FaUser, FaSoap, FaDog, FaBroom, FaBaby, FaCar } from 'react-icons/fa';
+import { useState, createContext, useContext } from 'react';
+import { useRouter } from 'next/navigation';
+const UserContext = createContext<string[]>([]); ;
 
 type CategoryButtonProps = {
   icon: React.ReactNode;
@@ -43,6 +45,16 @@ const categories = [
 
 export default function Sidebar() {
   const [selected, setSelected] = useState<string[]>([]);
+  const router = useRouter(); 
+
+  const toggleFilter = (label: string) => {
+    const updated = selected.includes(label)
+      ? selected.filter(l => l !== label)
+      : [...selected, label];
+
+    setSelected(updated);
+    router.push(`?filters=${updated.join(",")}`);
+  };
 
   return (
     <aside className="w-64 bg-white">
@@ -62,15 +74,11 @@ export default function Sidebar() {
             icon={cat.icon}
             label={cat.label}
             selected={selected.includes(cat.label)}
-            onClick={() =>
-              setSelected(selected =>
-                selected.includes(cat.label)
-                  ? selected.filter(l => l !== cat.label)
-                  : [...selected, cat.label]
-              )
-            }
+            onClick={() => toggleFilter(cat.label)}
           />
-        ))}
+        )
+        
+        )}
       </div>
 
       <div className="border-b border-gray-200 mt-0 mb-5"></div>
@@ -84,5 +92,7 @@ export default function Sidebar() {
         className="w-full accent-blue-600"
       />
     </aside>
+
   );
-}
+};
+

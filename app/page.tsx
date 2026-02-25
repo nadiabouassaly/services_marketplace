@@ -6,9 +6,12 @@ import ServicesHeader from '../components/ServicesHeader';
 import {UserService, Profile} from '@/types/userService' 
 import {getServices, getServiceByCategory} from '@/lib/services'
 
-export default async function HomePage() {
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ filters?: string }> }) {
 
-  const services: UserService[] = await getServices() ;
+  const { filters: filtersParam } = await searchParams;
+  const filters = filtersParam?.split(",").filter(Boolean) ?? [];  
+  
+  const services: UserService[] = await getServiceByCategory(filters);
 
   return (
     <div className="w-full">

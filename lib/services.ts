@@ -7,8 +7,14 @@ export async function getServices(){
     return data as UserService[]
 }
 
-export async function getServiceByCategory(category : string){
-    const {data} = await supabase.from('services').select('*').eq('category', category)
+export async function getServiceByCategory(categories : string[]){
 
+    if(categories.length == 0)
+    return getServices() ;
+    
+    else{
+    const {data} = await supabase.from('services').select('*').in('category', categories)
     return data as UserService[]
+    }
 }
+
