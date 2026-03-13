@@ -1,9 +1,13 @@
+"use client"
+
 import Logo from './Logo';
 import NavbarButton from './NavbarButton';
 import ProfileIcon from './ProfileIcon';
 import { FaSearch } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
 
 export default function Navbar() {
+  const router = useRouter();
   return (
     <nav className="bg-white shadow">
       <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -21,7 +25,7 @@ export default function Navbar() {
 
         <div className="flex items-center space-x-4">
           <ProfileIcon />
-          <NavbarButton>+ Post a Service</NavbarButton>
+          <NavbarButton onClick={()=>router.push("/Post")}>+ Post a Service</NavbarButton>
         </div>
       </div>
     </nav>

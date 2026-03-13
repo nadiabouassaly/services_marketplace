@@ -10,7 +10,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
   const { filters: filtersParam } = await searchParams;
   const filters = filtersParam?.split(",").filter(Boolean) ?? [];  
-  
+
   const services: UserService[] = await getServiceByCategory(filters);
 
   return (
