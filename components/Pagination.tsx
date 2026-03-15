@@ -19,6 +19,11 @@ export default function Pagination(numOfPages: ButtonProps){
     if(params.get("page") == null){
     router.replace('/?page=1&filters=');
     }
+    
+    if(params.get("page") != null){
+        const defaultPage = ()=>setCurrentPage(Number(params.get("page")))
+        defaultPage()
+    }
 
     }, [router]);
     
