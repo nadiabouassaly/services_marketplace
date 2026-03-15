@@ -1,7 +1,7 @@
 "use client";
 
 import { FaSlidersH, FaBook, FaUser, FaSoap, FaDog, FaBroom, FaBaby, FaCar } from 'react-icons/fa';
-import { useState, createContext, useContext } from 'react';
+import { useState, createContext, useContext, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation'; 
 const UserContext = createContext<string[]>([]); ; 
 
@@ -44,9 +44,13 @@ const categories = [
 ];
 
 export default function Sidebar() {
-  const [selected, setSelected] = useState<string[]>([]);
   const router = useRouter(); 
   const searchParams = useSearchParams();
+
+  const [selected, setSelected] = useState<string[]>(() => {
+  const filtersParam = searchParams.get("filters");
+  return filtersParam?.split(",").filter(Boolean) ?? [];
+  });
 
   const toggleFilter = (label: string) => {
     const updated = selected.includes(label)
@@ -59,8 +63,8 @@ export default function Sidebar() {
     const string = updated.join(",") ;
     params.set("filters", string)
     params.set("page", "1")
-    router.push(`?${params.toString()}`)
-  };
+    router.replace(`?${params.toString()}`)
+    }
 
   return (
     <aside className="w-64 bg-white">

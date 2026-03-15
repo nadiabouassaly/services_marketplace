@@ -15,7 +15,11 @@ export default function Pagination(numOfPages: ButtonProps){
 
     useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+
+    if(params.get("page") == null){
     router.replace('/?page=1&filters=');
+    }
+
     }, [router]);
     
     const arr : number[][]= [];
@@ -31,7 +35,6 @@ export default function Pagination(numOfPages: ButtonProps){
             index++ ;
         }
     }
-    
         const nextPage = () =>{
 
         if(currentPage != numOfPages.props){
