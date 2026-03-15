@@ -26,13 +26,17 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       {/* Outer container matches navbar width */}
       <div className="w-full flex justify-center mt-6">
         <div className="max-w-7xl w-full px-4 flex gap-6">
-          {/* Sidebar */}
-          <Sidebar />
 
+          <div className="max-w-7xl w-full px-4 flex gap-6 items-start"> {/* add items-start */}
+          {/* Sidebar */}
+          <div className="sticky top-6">  {/* wrap Sidebar with this */}
+          <Sidebar />
+          </div>
           <Suspense fallback={<div>Loading services...</div>}>
 
           {/* Cards */}
           <div className="flex-1">
+
             <ServicesHeader count={totalPages} />
         
             {totalPages >= 1 && <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -48,6 +52,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             <Pagination props = {numOfPages} />
           </div>
           </Suspense>
+        </div>
         </div>
       </div>
     </div>

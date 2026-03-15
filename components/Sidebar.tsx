@@ -98,7 +98,6 @@ export default function Sidebar() {
         className="w-full accent-blue-600"
       />
     </aside>
-
   );
 };
 
