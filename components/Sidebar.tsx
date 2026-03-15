@@ -2,7 +2,7 @@
 
 import { FaSlidersH, FaBook, FaUser, FaSoap, FaDog, FaBroom, FaBaby, FaCar } from 'react-icons/fa';
 import { useState, createContext, useContext } from 'react';
-import { useRouter } from 'next/navigation'; 
+import { useRouter, useSearchParams } from 'next/navigation'; 
 const UserContext = createContext<string[]>([]); ; 
 
 type CategoryButtonProps = {
@@ -46,6 +46,7 @@ const categories = [
 export default function Sidebar() {
   const [selected, setSelected] = useState<string[]>([]);
   const router = useRouter(); 
+  const searchParams = useSearchParams();
 
   const toggleFilter = (label: string) => {
     const updated = selected.includes(label)
@@ -53,7 +54,12 @@ export default function Sidebar() {
       : [...selected, label];
 
     setSelected(updated);
-    router.push(`?filters=${updated.join(",")}`);
+
+    const params = new URLSearchParams(searchParams.toString())
+    const string = updated.join(",") ;
+    params.set("filters", string)
+    params.set("page", "1")
+    router.push(`?${params.toString()}`)
   };
 
   return (

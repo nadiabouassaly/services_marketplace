@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import styles from './Button.module.css'
 import { useRouter, useSearchParams } from "next/navigation"
 
@@ -13,6 +13,11 @@ export default function Pagination(numOfPages: ButtonProps){
     const searchParams = useSearchParams();
     const router = useRouter();
 
+    useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    router.replace('/?page=1&filters=');
+    }, [router]);
+    
     const arr : number[][]= [];
     const numOfRows = Math.ceil(numOfPages.props/3) ;
     let number=1;

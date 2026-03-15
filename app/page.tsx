@@ -6,11 +6,11 @@ import ServicesHeader from '../components/ServicesHeader';
 import {UserService, Profile} from '@/types/userService' 
 import {getServiceByCategory} from '@/lib/services'
 import Pagination from '../components/Pagination' ;
-import { Suspense } from 'react';
+import { Suspense} from 'react';
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ filters?: string ; page?:string}> }) {
 
-  const { filters: filtersParam } = await searchParams;
+  const filtersParam= (await searchParams).filters;
   const filters = filtersParam?.split(",").filter(Boolean) ?? [];  
   const page = Number((await searchParams).page) || 1
 
@@ -35,7 +35,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           <div className="flex-1">
             <ServicesHeader count={totalPages} />
         
-            <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {totalPages >= 1 && <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {services.map((card) => (
                 <Card key={card.services_id}
                       name = {card.name}
@@ -44,7 +44,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                       category={card.category}
                       />
                 ))}            
-            </div>
+            </div>}
             <Pagination props = {numOfPages} />
           </div>
           </Suspense>
