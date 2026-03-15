@@ -29,7 +29,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
           <div className="max-w-7xl w-full px-4 flex gap-6 items-start"> {/* add items-start */}
           {/* Sidebar */}
-          <div className="sticky top-6">  {/* wrap Sidebar with this */}
+          <div className="sticky top-[90px]"> 
           <Sidebar />
           </div>
           <Suspense fallback={<div>Loading services...</div>}>
