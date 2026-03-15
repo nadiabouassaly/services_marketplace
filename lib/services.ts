@@ -1,20 +1,27 @@
 import {UserService} from '@/types/userService'
 import {supabase} from '@/lib/db'
 
-export async function getServices(){
-    const {data} = await supabase.from('services').select('*')
 
-    return data as UserService[]
-}
 
-export async function getServiceByCategory(categories : string[]){
+export async function getServiceByCategory(categories : string[], currentPage: number){
+    const from = (currentPage - 1) * 10;
+    const to = from + 10 - 1;
 
-    if(categories.length == 0)
-    return getServices() ;
+    if(categories.length == 0){
+        const {data, count} = await supabase.from('services').select('*',{ count: 'exact' }).range(from, to)
+        return {
+        services: data as UserService[],
+        totalPages: count ?? 0
+        }
+    }
     
     else{
-    const {data} = await supabase.from('services').select('*').in('category', categories)
-    return data as UserService[]
+    const {data, count} = await supabase.from('services').select('*', { count: 'exact'} ).in('category', categories).range(from, to)
+    return {
+        services: data as UserService[],
+        totalPages: count ?? 0
+        }
     }
 }
+
 

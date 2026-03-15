@@ -4,15 +4,20 @@ import Sidebar from '../components/Sidebar';
 import Card from '../components/Card';
 import ServicesHeader from '../components/ServicesHeader';
 import {UserService, Profile} from '@/types/userService' 
-import {getServices, getServiceByCategory} from '@/lib/services'
+import {getServiceByCategory} from '@/lib/services'
+import Pagination from '../components/Pagination' ;
+import { Suspense } from 'react';
 
-export default async function HomePage({ searchParams }: { searchParams: Promise<{ filters?: string }> }) {
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ filters?: string ; page?:string}> }) {
 
   const { filters: filtersParam } = await searchParams;
   const filters = filtersParam?.split(",").filter(Boolean) ?? [];  
+  const page = Number((await searchParams).page) || 1
 
-  const services: UserService[] = await getServiceByCategory(filters);
+  const {services, totalPages} = await getServiceByCategory(filters, page);
 
+  const numOfPages = Math.ceil(totalPages/12)
+  
   return (
     <div className="w-full pb-5">
       {/* Hero section */}
@@ -24,9 +29,11 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           {/* Sidebar */}
           <Sidebar />
 
+          <Suspense fallback={<div>Loading services...</div>}>
+
           {/* Cards */}
           <div className="flex-1">
-            <ServicesHeader count={services.length} />
+            <ServicesHeader count={totalPages} />
         
             <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {services.map((card) => (
@@ -38,7 +45,9 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                       />
                 ))}            
             </div>
+            <Pagination props = {numOfPages} />
           </div>
+          </Suspense>
         </div>
       </div>
     </div>

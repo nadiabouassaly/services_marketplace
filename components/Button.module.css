@@ -1,0 +1,9 @@
+.pageNumber{
+    color: #007BFF;
+    padding: 4px 8px;
+    text-decoration: none;
+    border: 1px solid #007BFF;
+    margin: 0 5px;
+    border-radius: 4px;
+    font-size: 15px;
+}

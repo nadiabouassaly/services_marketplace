@@ -2,7 +2,7 @@
 
 import { FaSlidersH, FaBook, FaUser, FaSoap, FaDog, FaBroom, FaBaby, FaCar } from 'react-icons/fa';
 import { useState, createContext, useContext } from 'react';
-import { useRouter } from 'next/navigation'; //comment
+import { useRouter } from 'next/navigation'; 
 const UserContext = createContext<string[]>([]); ; 
 
 type CategoryButtonProps = {
