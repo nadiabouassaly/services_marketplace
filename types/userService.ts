@@ -1,4 +1,3 @@
-//comment
 
 export type Profile = {
     firstname : string
