@@ -7,7 +7,6 @@ import {UserService, Profile} from '@/types/userService'
 import {getServiceByCategory} from '@/lib/services'
 import Pagination from '../components/Pagination' ;
 import { Suspense} from 'react';
-import { useSearchParams } from 'react-router-dom';
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ filters?: string ; page?:string}> }) {
   

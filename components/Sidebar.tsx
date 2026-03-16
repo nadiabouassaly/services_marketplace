@@ -61,14 +61,10 @@ export default function Sidebar() {
     setSelected(updated);
 
     const string = updated.join(",") ;
+
     params.set("filters", string)
     params.set("page", "1")
     router.replace(`?${params.toString()}`)
-    }
-
-    const click = (label: string)=>{
-      toggleFilter(label)
-      params.set("page","1")
     }
 
   return (
@@ -89,7 +85,7 @@ export default function Sidebar() {
             icon={cat.icon}
             label={cat.label}
             selected={selected.includes(cat.label)}
-            onClick={() => click(cat.label)}
+            onClick={() => toggleFilter(cat.label)}
           />
         )
         
