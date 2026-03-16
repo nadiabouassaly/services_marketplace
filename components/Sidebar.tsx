@@ -3,7 +3,8 @@
 import { FaSlidersH, FaBook, FaUser, FaSoap, FaDog, FaBroom, FaBaby, FaCar } from 'react-icons/fa';
 import { useState, createContext, useContext, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation'; 
-const UserContext = createContext<string[]>([]); ; 
+
+const UserContext = createContext(false); ; 
 
 type CategoryButtonProps = {
   icon: React.ReactNode;
@@ -47,10 +48,14 @@ export default function Sidebar() {
   const router = useRouter(); 
   const searchParams = useSearchParams();
 
+  const [newFilter, setNewFilter] = useState(false);
+
   const [selected, setSelected] = useState<string[]>(() => {
   const filtersParam = searchParams.get("filters");
   return filtersParam?.split(",").filter(Boolean) ?? [];
   });
+
+  const params = new URLSearchParams(searchParams.toString())
 
   const toggleFilter = (label: string) => {
     const updated = selected.includes(label)
@@ -59,14 +64,19 @@ export default function Sidebar() {
 
     setSelected(updated);
 
-    const params = new URLSearchParams(searchParams.toString())
     const string = updated.join(",") ;
     params.set("filters", string)
     params.set("page", "1")
     router.replace(`?${params.toString()}`)
     }
 
+    const click = (label: string)=>{
+      toggleFilter(label)
+      params.set("page","1")
+    }
+
   return (
+    <UserContext.Provider value={newFilter}>
     <aside className="w-64 bg-white">
       <h2 className="text-lg font-bold mb-4 flex items-center">
         <FaSlidersH className="mr-2 text-[#0e56c9]" />
@@ -84,7 +94,7 @@ export default function Sidebar() {
             icon={cat.icon}
             label={cat.label}
             selected={selected.includes(cat.label)}
-            onClick={() => toggleFilter(cat.label)}
+            onClick={() => click(cat.label)}
           />
         )
         
@@ -102,6 +112,14 @@ export default function Sidebar() {
         className="w-full accent-blue-600"
       />
     </aside>
+    </UserContext.Provider>
   );
 };
+
+export function useNewFilterClicked(){
+  const bool = useContext(UserContext) ;
+
+  return bool ;
+}
+
 

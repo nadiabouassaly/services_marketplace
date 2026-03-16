@@ -1,7 +1,8 @@
 "use client"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import styles from './Button.module.css'
 import { useRouter, useSearchParams } from "next/navigation"
+import {useNewFilterClicked} from './Sidebar'
 
 type ButtonProps = {
     props: number 
@@ -13,20 +14,6 @@ export default function Pagination(numOfPages: ButtonProps){
     const searchParams = useSearchParams();
     const router = useRouter();
 
-    useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-
-    if(params.get("page") == null){
-    router.replace('/?page=1&filters=');
-    }
-    
-    if(params.get("page") != null){
-        const defaultPage = ()=>setCurrentPage(Number(params.get("page")))
-        defaultPage()
-    }
-
-    }, [router]);
-    
     const arr : number[][]= [];
     const numOfRows = Math.ceil(numOfPages.props/3) ;
     let number=1;
@@ -40,7 +27,25 @@ export default function Pagination(numOfPages: ButtonProps){
             index++ ;
         }
     }
-        const nextPage = () =>{
+
+    useEffect(() => {
+
+    if(searchParams.get("page") == null){
+    router.replace('/?page=1&filters=');
+    }
+    
+    if(searchParams.get("page") != null){
+
+    const defaultPage = ()=>{setCurrentPage(Number(searchParams.get("page")))
+    const rowIndex = arr.findIndex(row => row.includes(Number(searchParams.get("page"))));
+    setCurrentRow(rowIndex)
+    }
+    defaultPage()
+    }
+
+    }, [searchParams]);
+
+    const nextPage = () =>{
 
         if(currentPage != numOfPages.props){
             const index = arr[currentRow].lastIndexOf(currentPage);
