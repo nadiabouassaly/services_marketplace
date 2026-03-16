@@ -2,7 +2,6 @@
 import { useContext, useEffect, useMemo, useState } from "react"
 import styles from './Button.module.css'
 import { useRouter, useSearchParams } from "next/navigation"
-import {useNewFilterClicked} from './Sidebar'
 
 type ButtonProps = {
     props: number 

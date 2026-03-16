@@ -4,8 +4,6 @@ import { FaSlidersH, FaBook, FaUser, FaSoap, FaDog, FaBroom, FaBaby, FaCar } fro
 import { useState, createContext, useContext, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation'; 
 
-const UserContext = createContext(false); ; 
-
 type CategoryButtonProps = {
   icon: React.ReactNode;
   label: string;
@@ -48,8 +46,6 @@ export default function Sidebar() {
   const router = useRouter(); 
   const searchParams = useSearchParams();
 
-  const [newFilter, setNewFilter] = useState(false);
-
   const [selected, setSelected] = useState<string[]>(() => {
   const filtersParam = searchParams.get("filters");
   return filtersParam?.split(",").filter(Boolean) ?? [];
@@ -76,7 +72,6 @@ export default function Sidebar() {
     }
 
   return (
-    <UserContext.Provider value={newFilter}>
     <aside className="w-64 bg-white">
       <h2 className="text-lg font-bold mb-4 flex items-center">
         <FaSlidersH className="mr-2 text-[#0e56c9]" />
@@ -112,14 +107,9 @@ export default function Sidebar() {
         className="w-full accent-blue-600"
       />
     </aside>
-    </UserContext.Provider>
   );
 };
 
-export function useNewFilterClicked(){
-  const bool = useContext(UserContext) ;
 
-  return bool ;
-}
 
 
