@@ -1,5 +1,5 @@
 "use client"
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useMemo, useState } from "react"
 import styles from './Button.module.css'
 import { useRouter, useSearchParams } from "next/navigation"
 import {useNewFilterClicked} from './Sidebar'
@@ -11,35 +11,56 @@ type ButtonProps = {
 export default function Pagination(numOfPages: ButtonProps){
     const [currentPage, setCurrentPage] = useState(1);
     const [currentRow, setCurrentRow] = useState(0);
-    const searchParams = useSearchParams();
-    const router = useRouter();
 
-    const arr : number[][]= [];
-    const numOfRows = Math.ceil(numOfPages.props/3) ;
-    let number=1;
-    for(let row=0; row<numOfRows;row++){
-        arr[row] = new Array(3);
-        
-        let index = 0 ;
-        while(number <=numOfPages.props && index<3){
-            arr[row][index] = number;
-            number++;
-            index++ ;
-        }
+    const searchParams = useSearchParams();
+    const pageParam = searchParams.get("page")
+
+    const router = useRouter();
+    const numOfRows = Math.ceil(numOfPages.props / 3);
+
+    const arr: number[][] = useMemo(() => {
+    const arr: number[][] = [];
+    let number = 1;
+
+    for (let row = 0; row < numOfRows; row++) {
+    arr[row] = new Array(3);
+
+    let index = 0;
+    while (number <= numOfPages.props && index < 3) {
+      arr[row][index] = number;
+      number++;
+      index++;
     }
+    }
+
+    return arr;
+    }, [numOfPages.props, numOfRows]);
+
+    const pageRowMap = useMemo(() => {
+        const map: Record<number, number> = {}
+
+        arr.forEach((row, rowIndex) => {
+        row.forEach((value) => {
+        map[value] = rowIndex
+        })
+    })
+
+  return map
+}, [arr])
 
     useEffect(() => {
 
-    if(searchParams.get("page") == null){
+    if(pageParam == null){
     router.replace('/?page=1&filters=');
     }
     
-    if(searchParams.get("page") != null){
+    if(pageParam != null){
 
-    const defaultPage = ()=>{setCurrentPage(Number(searchParams.get("page")))
-    const rowIndex = arr.findIndex(row => row.includes(Number(searchParams.get("page"))));
+    const defaultPage = ()=>{setCurrentPage(Number(pageParam))
+    const rowIndex = pageRowMap[Number(pageParam)];
     setCurrentRow(rowIndex)
     }
+
     defaultPage()
     }
 
