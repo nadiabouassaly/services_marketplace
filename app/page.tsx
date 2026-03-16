@@ -9,8 +9,13 @@ import Pagination from '../components/Pagination' ;
 import { Suspense} from 'react';
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ filters?: string ; page?:string}> }) {
+<<<<<<< HEAD
   
   const filtersParam= (await searchParams).filters;
+=======
+
+  const filtersParam = (await searchParams).filters;
+>>>>>>> 074489d (Modifying URL based on price slider)
   const filters = filtersParam?.split(",").filter(Boolean) ?? [];  
   const page = Number((await searchParams).page) || 1
 

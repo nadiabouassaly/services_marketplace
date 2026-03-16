@@ -45,11 +45,20 @@ const categories = [
 export default function Sidebar() {
   const router = useRouter(); 
   const searchParams = useSearchParams();
+<<<<<<< HEAD
+=======
+  
+  const [newFilter, setNewFilter] = useState(false);
+>>>>>>> 074489d (Modifying URL based on price slider)
 
   //getting the filters from the URL and setting it as default
   const [selected, setSelected] = useState<string[]>(() => {
   const filtersParam = searchParams.get("filters");
   return filtersParam?.split(",").filter(Boolean) ?? [];
+  });
+
+  const [price, setPrice] = useState<number>(() => {
+    return Number(searchParams.get("price")) || 100;
   });
 
   const params = new URLSearchParams(searchParams.toString())
@@ -68,6 +77,22 @@ export default function Sidebar() {
     router.replace(`?${params.toString()}`)
     }
 
+<<<<<<< HEAD
+=======
+    const handlePrice = (value: number) => {
+      setPrice(value);
+    
+      params.set("price", value.toString());
+      params.set("page", "1");
+    
+      router.replace(`?${params.toString()}`);
+    };
+
+    const click = (label: string)=>{
+      toggleFilter(label)
+    }
+
+>>>>>>> 074489d (Modifying URL based on price slider)
   return (
     <aside className="w-64 bg-white">
       <h2 className="text-lg font-bold mb-4 flex items-center">
@@ -77,7 +102,7 @@ export default function Sidebar() {
 
       <div className="border-b border-gray-200 mt-0 mb-5"></div>
 
-      {/* Category Section */}
+      {/* Category Filters */}
       <div className="mb-2 text-base font-semibold text-gray-700">Category</div>
       <div className="flex flex-col gap-2 mb-6">
         {categories.map(cat => (
@@ -95,18 +120,28 @@ export default function Sidebar() {
 
       <div className="border-b border-gray-200 mt-0 mb-5"></div>
 
-      {/* Price Range Section */}
+      {/* Price Range Filter */}
       <div className="mb-2 text-base font-semibold text-gray-700">Price Range</div>
       <input
         type="range"
-        min={0}
+        min={5}
         max={100}
+        value={price}
+        onChange={(e) => handlePrice(Number(e.target.value))}
         className="w-full accent-blue-600"
       />
     </aside>
   );
 };
 
+<<<<<<< HEAD
 
 
 
+=======
+export function useNewFilterClicked(){
+  const bool = useContext(UserContext) ;
+
+  return bool ;
+}
+>>>>>>> 074489d (Modifying URL based on price slider)
