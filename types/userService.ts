@@ -21,5 +21,6 @@ export type UserService = {
     description : string
     price : number
     location : string
+    created_at : string
     category : "Tutoring" | "Babysitting" | "Elderly Care" | "Home Maintenance" | "Pet Care" | "Transportation" | "Other"
 } 
