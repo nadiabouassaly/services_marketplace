@@ -72,14 +72,22 @@ export default function Sidebar() {
     router.replace(`?${params.toString()}`)
     }
 
+    const [debouncedPrice, setDebouncedPrice] = useState<number>(price);
+
     const handlePrice = (value: number) => {
       setPrice(value);
-    
-      params.set("price", value.toString());
-      params.set("page", "1");
-    
-      router.replace(`?${params.toString()}`);
     };
+
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("price", price.toString());
+        params.set("page", "1");
+        router.replace(`?${params.toString()}`);
+      }, 300);
+    
+      return () => clearTimeout(timer);
+    }, [price]);
 
   return (
     <aside className="w-64 bg-white">
