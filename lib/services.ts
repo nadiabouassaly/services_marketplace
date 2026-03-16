@@ -1,6 +1,12 @@
 import {UserService} from '@/types/userService'
 import {supabase} from '@/lib/db'
+import { UUID } from 'crypto';
 
+export async function getServices(){
+    const {data} = await supabase.from('services').select('*')
+
+    return data as UserService[]
+}
 
 
 export async function getServiceByCategory(categories : string[], currentPage: number){
@@ -22,6 +28,22 @@ export async function getServiceByCategory(categories : string[], currentPage: n
         totalPages: count ?? 0
         }
     }
+}
+
+export async function getServicesById(id: UUID){
+    const {data} = await supabase.from('services').select('*').eq('services_id', id).single();
+    return data as UserService;
+}
+
+
+export function timeAgo(date: string): string {
+  const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
+
+  if (seconds < 60) return "Just now";
+  if (seconds < 3600) return `${Math.floor(seconds / 60)} MINUTES AGO`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)} HOURS AGO`;
+  if (seconds < 2592000) return `${Math.floor(seconds / 86400)} DAYS AGO`;
+  return `${Math.floor(seconds / 2592000)} MONTHS AGO`;
 }
 
 
