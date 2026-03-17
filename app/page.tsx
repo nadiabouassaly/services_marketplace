@@ -22,6 +22,7 @@ export default async function HomePage(searchParams: { filters?: string; page?: 
   const numOfPages = Math.ceil(totalPages / 12);
 
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <div className="w-full pb-5">
       {/* Hero section */}
       <Hero />
@@ -60,5 +61,6 @@ export default async function HomePage(searchParams: { filters?: string; page?: 
         </div>
       </div>
     </div>
+    </Suspense>
   );
 }
