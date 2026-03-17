@@ -3,6 +3,7 @@
 import { FaSlidersH, FaBook, FaUser, FaSoap, FaDog, FaBroom, FaBaby, FaCar } from 'react-icons/fa';
 import { useState, createContext, useContext, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation'; 
+import React from 'react';
 
 type CategoryButtonProps = {
   icon: React.ReactNode;
@@ -114,16 +115,31 @@ export default function Sidebar() {
 
       <div className="border-b border-gray-200 mt-0 mb-5"></div>
 
-      {/* Price Range Section */}
-      <div className="mb-2 text-base font-semibold text-gray-700">Price Range</div>
-      <input
-        type="range"
-        min={5}
-        max={100}
-        value={price}
-        onChange={(e) => handlePrice(Number(e.target.value))}
-        className="w-full accent-blue-600"
-      />
+      <div className="mb-2 text-base font-semibold text-gray-700">Price Filter</div>
+
+      <div className="relative w-full">
+        {/* Price label */}
+        {price !== 100 && (
+        <div
+          className="absolute -top-6 text-xs bg-blue-600 text-white px-2 py-1 rounded"
+          style={{
+            left: `${((price - 5) / (100 - 5)) * 100}%`,
+            transform: "translateX(-50%)"
+          }}
+        >
+          {price}
+        </div>
+        )}
+
+        <input
+          type="range"
+          min={5}
+          max={100}
+          value={price}
+          onChange={(e) => handlePrice(Number(e.target.value))}
+          className="w-full accent-blue-600"
+        />
+      </div>
     </aside>
   );
 };
