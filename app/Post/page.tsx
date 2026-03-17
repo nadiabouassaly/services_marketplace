@@ -64,11 +64,12 @@ export default function Post() {
       setPrice("");
       setLocation("");
       setCategory(categories[0]);
-    } catch (error: any) {
-      setStatus(error?.message || "Failed to create service.");
+    }catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to create service.";
+    setStatus(message);
     } finally {
-      setIsSubmitting(false);
-    }
+    setIsSubmitting(false);
+    } 
   };
 
   return (
