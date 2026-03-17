@@ -8,6 +8,7 @@ export async function getServices(){
     return data as UserService[]
 }
 
+//fetching the services
 export async function getServiceByCategory(categories : string[], currentPage: number, maxPrice: number = 100){
     const from = (currentPage - 1) * 12;
     const to = from + 12 - 1;
