@@ -6,7 +6,8 @@ import ProfileIcon from './ProfileIcon';
 import { FaSearch } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function Navbar() {
   const router = useRouter();
@@ -31,11 +32,59 @@ export default function Navbar() {
 
 function SearchBar(){
 
+    const searchParam = useSearchParams();
+    const [inputValue, setInputValue] = useState("");
+    const router = useRouter();
+
+    const [search, setSearch] = useState<string>(() => {
+    const searchURL = searchParam.get("search");
+    return searchURL ? searchURL : ""
+    });
+    
+    useEffect(()=>{
+      const params = new URLSearchParams(searchParam.toString());
+
+      params.set("search", search)
+      params.set("page","1")
+      router.replace(`?${params.toString()}`);
+
+    },[search])
+
+    useEffect(() => {
+
+    if(inputValue != "")return;
+    
+    const params = new URLSearchParams(searchParam.toString());
+
+    params.set("search","")
+    params.set("page","1")
+    router.replace(`?${params.toString()}`);
+
+    const timer = setTimeout(() => {
+    setSearch(inputValue); // fires setSearch automatically after 500ms
+    }, 2000);
+
+    return () => clearTimeout(timer);
+    }, [inputValue]);
+
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+
+    };
+  
+    const handleOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if(e.key == "Enter")
+    setSearch(inputValue);
+    };
+
   return (
     <div className="flex-1 mx-6 relative max-w-md">
           <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm" />
           <input
             type="text"
+            onKeyDown={handleOnKeyDown}
+            onChange={handleChange}
             placeholder="Search Services"
             className="w-full pl-11 pr-6 py-2 rounded-md bg-gray-100 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#0a74ff]"
           />
