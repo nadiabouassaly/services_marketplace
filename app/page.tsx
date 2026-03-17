@@ -8,12 +8,8 @@ import {getServiceByCategory} from '@/lib/services'
 import Pagination from '../components/Pagination' ;
 import { Suspense} from 'react';
 
-export default async function HomePage({ 
-  searchParams 
-}: { 
-  searchParams: Promise<{ filters?: string; page?: string; maxPrice?: string; search?: string }> 
-}) {
-  const resolvedParams = await searchParams;
+export default async function HomePage(searchParams: { filters?: string; page?: string; maxPrice?: string; search?: string }) {
+  const resolvedParams = searchParams;
   
   const filtersParam = resolvedParams.filters;
   const filters = filtersParam?.split(",").filter(Boolean) ?? [];

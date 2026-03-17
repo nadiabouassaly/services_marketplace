@@ -10,7 +10,6 @@ type PageProps = {
     params : Promise<{ id: UUID }>;
 }
 
-
 export default async function ServicePage({params }: PageProps){
     const resolvedParams = await params;
     const id = resolvedParams.id;
