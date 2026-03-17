@@ -46,7 +46,6 @@ export default function Sidebar() {
   const router = useRouter(); 
   const searchParams = useSearchParams();
 
-  //getting the filters from the URL
   const [selected, setSelected] = useState<string[]>(() => {
   const filtersParam = searchParams.get("filters");
   return filtersParam?.split(",").filter(Boolean) ?? [];
