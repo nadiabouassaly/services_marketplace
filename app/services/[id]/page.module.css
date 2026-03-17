@@ -1,0 +1,157 @@
+.page {
+  min-height: 100vh;
+  background: #ffffff;
+  padding: 3rem 1rem;
+}
+
+.container {
+  max-width: 1080px;
+  margin-bottom: 50px;
+  padding-left: 50px;
+}
+
+.card {
+  background: #fff;
+  border: 2px solid #007BFF;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.notFound {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  color: #007BFF;
+  font-size: 15px;
+}
+
+.header {
+  padding: 2rem 2rem 1.5rem;
+  border-bottom: 1px solid #007BFF;
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.15;
+  color: #111;
+  margin: 0 0 6px;
+}
+
+.price{
+  color:#007BFF;
+  font-weight: bold;
+  font-size: 36px;
+  padding-left: 20px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: #aaa;
+  margin: 0;
+}
+
+.body {
+  padding: 1.75rem 2rem;
+}
+
+.provider {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  background: #fafafa;
+  border: 1px solid #007BFF;
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #dbeafe;
+  color: #1e40af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.description {
+  font-size: 15px;
+  padding-top: 30px;
+  color: #666;
+  line-height: 1.75;
+  margin: 0 0 1.5rem;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btnSecondary,
+.btnPrimary {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.15s;
+}
+
+.btnSecondary {
+  background: #fff;
+  color: #007BFF;
+  border: 1px solid #007BFF;
+}
+
+.btnSecondary:hover {
+  background: #fafafa;
+}
+
+.btnPrimary {
+  background: #007BFF;
+  color: #fff;
+}
+
+.btnPrimary:hover {
+  opacity: 0.85;
+}
+
+.box {
+  position: absolute;
+  top: 100px;
+  left: 1225px;
+}
+
+.titleBox {
+  position: absolute;
+  top: 100px;
+  left: 100px;
+}
+
+.row {
+  display: flex;           
+  justify-content: space-between;
+  align-items: center; 
+}
