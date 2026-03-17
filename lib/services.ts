@@ -35,6 +35,21 @@ export async function getServicesById(id: UUID){
     return data as UserService;
 }
 
+export async function createService(service: Omit<UserService, 'services_id' | 'created_at' | 'provider'>) {
+    const response = await fetch('/api/services', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(service),
+    });
+
+    if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Failed to create service: ${text}`);
+    }
+
+    const created = await response.json();
+    return created as UserService;
+}
 
 export function timeAgo(date: string): string {
   const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
