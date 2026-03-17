@@ -8,15 +8,21 @@ import {getServiceByCategory} from '@/lib/services'
 import Pagination from '../components/Pagination' ;
 import { Suspense} from 'react';
 
-export default async function HomePage({ searchParams }: { searchParams: Promise<{ filters?: string ; page?:string}> }) {
+export default async function HomePage({ 
+  searchParams 
+}: { 
+  searchParams: Promise<{ filters?: string; page?: string; maxPrice?: string }> 
+}) {
+  const resolvedParams = await searchParams;
+  
+  const filtersParam = resolvedParams.filters;
+  const filters = filtersParam?.split(",").filter(Boolean) ?? [];
+  const page = Number(resolvedParams.page) || 1;
+  const priceParam = resolvedParams.maxPrice ? Number(resolvedParams.maxPrice) : 100;
 
-  const filtersParam = (await searchParams).filters;
-  const filters = filtersParam?.split(",").filter(Boolean) ?? [];  
-  const page = Number((await searchParams).page) || 1
+  const { services, totalPages } = await getServiceByCategory(filters, page, priceParam);
+  const numOfPages = Math.ceil(totalPages / 12);
 
-  const {services, totalPages} = await getServiceByCategory(filters, page);
-
-  const numOfPages = Math.ceil(totalPages/12)
   
   return (
     <div className="w-full pb-5">
