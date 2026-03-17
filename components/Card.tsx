@@ -1,9 +1,4 @@
 "use client";
-<<<<<<< HEAD
-//
-=======
-
->>>>>>> origin/master
 import { FaBook, FaUser, FaBroom, FaDog, FaBaby, FaCar } from 'react-icons/fa';
 import { useRouter } from "next/navigation";
 
