@@ -8,12 +8,13 @@ export async function getServices(){
     return data as UserService[]
 }
 
-export async function getServiceByCategory(categories : string[], currentPage: number){
+export async function getServiceByCategory(categories : string[], currentPage: number, maxPrice: number = 100){
     const from = (currentPage - 1) * 12;
     const to = from + 12 - 1;
+    const price = Number(maxPrice);
 
     if(categories.length == 0){
-        const {data, count} = await supabase.from('services').select('*',{ count: 'exact' }).range(from, to)
+        const {data, count} = await supabase.from('services').select('*',{ count: 'exact' }).lte('price', price).range(from, to)
         return {
         services: data as UserService[],
         totalPages: count ?? 0
@@ -21,7 +22,7 @@ export async function getServiceByCategory(categories : string[], currentPage: n
     }
     
     else{
-    const {data, count} = await supabase.from('services').select('*', { count: 'exact'} ).in('category', categories).range(from, to)
+    const {data, count} = await supabase.from('services').select('*', { count: 'exact'} ).in('category', categories).lte('price', price).range(from, to)
     return {
         services: data as UserService[],
         totalPages: count ?? 0

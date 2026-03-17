@@ -46,13 +46,15 @@ export default function Sidebar() {
   const router = useRouter(); 
   const searchParams = useSearchParams();
 
+  //getting the filters from the URL
   const [selected, setSelected] = useState<string[]>(() => {
   const filtersParam = searchParams.get("filters");
   return filtersParam?.split(",").filter(Boolean) ?? [];
   });
 
   const [price, setPrice] = useState<number>(() => {
-    return Number(searchParams.get("price")) || 100;
+    const priceFromUrl = searchParams.get("maxPrice");
+    return priceFromUrl ? Number(priceFromUrl) : 100;
   });
 
   const params = new URLSearchParams(searchParams.toString())
@@ -71,8 +73,6 @@ export default function Sidebar() {
     router.replace(`?${params.toString()}`)
     }
 
-    const [debouncedPrice, setDebouncedPrice] = useState<number>(price);
-
     const handlePrice = (value: number) => {
       setPrice(value);
     };
@@ -80,13 +80,13 @@ export default function Sidebar() {
     useEffect(() => {
       const timer = setTimeout(() => {
         const params = new URLSearchParams(searchParams.toString());
-        params.set("price", price.toString());
+        params.set("maxPrice", price.toString());
         params.set("page", "1");
         router.replace(`?${params.toString()}`);
       }, 300);
     
       return () => clearTimeout(timer);
-    }, [price]);
+    }, [price, router, searchParams]);
 
   return (
     <aside className="w-64 bg-white">
