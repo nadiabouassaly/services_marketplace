@@ -57,8 +57,6 @@ export default function Sidebar() {
     return priceFromUrl ? Number(priceFromUrl) : 100;
   });
 
-  const params = new URLSearchParams(searchParams.toString())
-
   const toggleFilter = (label: string) => {
     const updated = selected.includes(label)
       ? selected.filter(l => l !== label)
@@ -68,6 +66,7 @@ export default function Sidebar() {
 
     const string = updated.join(",") ;
 
+    const params = new URLSearchParams(searchParams.toString());
     params.set("filters", string)
     params.set("page", "1")
     router.replace(`?${params.toString()}`)
@@ -78,15 +77,15 @@ export default function Sidebar() {
     };
 
     useEffect(() => {
-      const timer = setTimeout(() => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("maxPrice", price.toString());
-        params.set("page", "1");
-        router.replace(`?${params.toString()}`);
-      }, 300);
-    
-      return () => clearTimeout(timer);
-    }, [price, router, searchParams]);
+    const timer = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("maxPrice", price.toString());
+      params.set("page","1")
+      router.replace(`?${params.toString()}`);
+    }, 300);
+
+    return () => clearTimeout(timer);
+    }, [price]);
 
   return (
     <aside className="w-64 bg-white">

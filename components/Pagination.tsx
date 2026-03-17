@@ -50,7 +50,7 @@ export default function Pagination(numOfPages: ButtonProps){
     useEffect(() => {
 
     if(pageParam == null){
-    router.replace('/?page=1&filters=');
+    router.replace('/?page=1&filters=&maxPrice=');
     }
     
     if(pageParam != null){
