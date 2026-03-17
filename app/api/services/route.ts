@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    if (!body?.userprofile_id || !body?.name || !body?.description || body?.price === undefined || !body?.location || !body?.category) {
+    if (!body?.name || !body?.description || body?.price === undefined || !body?.location || !body?.category) {
       return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
     }
 
@@ -41,18 +41,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'Invalid price' }, { status: 400 });
     }
 
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    if (!uuidRegex.test(String(body.userprofile_id).trim())) {
-      return NextResponse.json({ message: 'userprofile_id must be a valid UUID' }, { status: 400 });
-    }
-
     if (!categories.includes(body.category)) {
       return NextResponse.json({ message: 'Invalid category' }, { status: 400 });
     }
 
-    const newService = {
+    const userprofile_id = body.userprofile_id
+      ? String(body.userprofile_id).trim()
+      : '05975042-38a2-47cc-b785-03716544c5cd';
+
+    const newService: any = {
       services_id: randomUUID(),
-      userprofile_id: String(body.userprofile_id).trim(),
+      userprofile_id,
       name: String(body.name).trim(),
       description: String(body.description).trim(),
       price: body.price,

@@ -15,7 +15,6 @@ const categories = [
 ];
 
 export default function Post() {
-  const [userProfileId, setUserProfileId] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -28,14 +27,8 @@ export default function Post() {
     event.preventDefault();
     setStatus(null);
 
-    if (!userProfileId.trim() || !name.trim() || !description.trim() || !price || !location.trim() || !category) {
+    if (!name.trim() || !description.trim() || !price || !location.trim() || !category) {
       setStatus("Please fill in all required fields.");
-      return;
-    }
-
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    if (!uuidRegex.test(userProfileId.trim())) {
-      setStatus("User Profile ID must be a valid UUID.");
       return;
     }
 
@@ -49,7 +42,6 @@ export default function Post() {
 
     try {
       await createService({
-        userprofile_id: userProfileId.trim(),
         name: name.trim(),
         description: description.trim(),
         price: parsedPrice,
@@ -64,7 +56,6 @@ export default function Post() {
           | "Other",
       });
       setStatus("Service created successfully!");
-      setUserProfileId("");
       setName("");
       setDescription("");
       setPrice("");
@@ -84,18 +75,7 @@ export default function Post() {
 
         <form onSubmit={handleSubmit} className="grid gap-4">
           <label className="space-y-1 text-sm text-slate-700">
-            <span className="font-medium">User Profile ID*</span>
-            <input
-              type="text"
-              value={userProfileId}
-              onChange={(e) => setUserProfileId(e.target.value)}
-              required
-              className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:ring focus:ring-blue-200 outline-none"
-            />
-          </label>
-
-          <label className="space-y-1 text-sm text-slate-700">
-            <span className="font-medium">Name*</span>
+            <span className="font-medium">Title*</span>
             <input
               type="text"
               value={name}

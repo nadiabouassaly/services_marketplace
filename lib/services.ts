@@ -30,7 +30,7 @@ export async function getServiceByCategory(categories : string[], currentPage: n
     }
 }
 
-export async function createService(service: Omit<UserService, 'services_id' | 'created_at' | 'provider'>) {
+export async function createService(service: Omit<UserService, 'services_id' | 'created_at' | 'provider' | 'userprofile_id'>) {
     const response = await fetch('/api/services', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
