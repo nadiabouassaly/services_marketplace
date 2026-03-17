@@ -52,6 +52,10 @@ export default function Sidebar() {
   return filtersParam?.split(",").filter(Boolean) ?? [];
   });
 
+  const [price, setPrice] = useState<number>(() => {
+    return Number(searchParams.get("price")) || 100;
+  });
+
   const params = new URLSearchParams(searchParams.toString())
 
   const toggleFilter = (label: string) => {
@@ -67,6 +71,23 @@ export default function Sidebar() {
     params.set("page", "1")
     router.replace(`?${params.toString()}`)
     }
+
+    const [debouncedPrice, setDebouncedPrice] = useState<number>(price);
+
+    const handlePrice = (value: number) => {
+      setPrice(value);
+    };
+
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("price", price.toString());
+        params.set("page", "1");
+        router.replace(`?${params.toString()}`);
+      }, 300);
+    
+      return () => clearTimeout(timer);
+    }, [price]);
 
   return (
     <aside className="w-64 bg-white">
@@ -99,14 +120,12 @@ export default function Sidebar() {
       <div className="mb-2 text-base font-semibold text-gray-700">Price Range</div>
       <input
         type="range"
-        min={0}
+        min={5}
         max={100}
+        value={price}
+        onChange={(e) => handlePrice(Number(e.target.value))}
         className="w-full accent-blue-600"
       />
     </aside>
   );
 };
-
-
-
-

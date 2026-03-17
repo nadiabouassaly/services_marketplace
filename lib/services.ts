@@ -40,10 +40,9 @@ export function timeAgo(date: string): string {
   const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
 
   if (seconds < 60) return "Just now";
-  if (seconds < 3600) return `${Math.floor(seconds / 60)} MINUTES AGO`;
-  if (seconds < 86400) return `${Math.floor(seconds / 3600)} HOURS AGO`;
-  if (seconds < 2592000) return `${Math.floor(seconds / 86400)} DAYS AGO`;
-  return `${Math.floor(seconds / 2592000)} MONTHS AGO`;
+  if (seconds < 3600) return  (Math.floor(seconds / 60) === 1? `${Math.floor(seconds / 60)} MINUTE AGO` : `${Math.floor(seconds / 60)} MINUTES AGO`);
+  if (seconds < 86400) return (Math.floor(seconds / 3600) === 1? `${Math.floor(seconds / 3600)} HOUR AGO` : `${Math.floor(seconds / 3600)} HOURS AGO`);
+  if (seconds < 2592000) return (Math.floor(seconds / 86400) === 1? `${Math.floor(seconds / 86400)} DAY AGO` : `${Math.floor(seconds / 86400)} DAYS AGO`);
+  return (Math.floor(seconds / 2592000) === 1 ? `${Math.floor(seconds / 2592000)} MONTH AGO` : `${Math.floor(seconds / 2592000)} MONTHS AGO`);
 }
-
 

@@ -9,8 +9,8 @@ import Pagination from '../components/Pagination' ;
 import { Suspense} from 'react';
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ filters?: string ; page?:string}> }) {
-  
-  const filtersParam= (await searchParams).filters;
+
+  const filtersParam = (await searchParams).filters;
   const filters = filtersParam?.split(",").filter(Boolean) ?? [];  
   const page = Number((await searchParams).page) || 1
 
@@ -42,6 +42,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             {totalPages >= 1 && <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {services.map((card) => (
                 <Card key={card.services_id}
+                       id={card.services_id.toString()} //change here
                       name = {card.name}
                       price = {card.price}
                       description={card.description}

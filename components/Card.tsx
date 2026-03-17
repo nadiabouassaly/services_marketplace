@@ -1,7 +1,11 @@
+"use client";
+
 import { FaBook, FaUser, FaBroom, FaDog, FaBaby, FaCar } from 'react-icons/fa';
+import { useRouter } from "next/navigation";
 
 type CardProps = {
   name: string;
+  id : string;
   description: string;
   price: number;
   category: string; // category prop
@@ -17,11 +21,11 @@ const categoryIcons: Record<string, React.ReactNode> = {
   'transportation': <FaCar />,
 };
 
-export default function Card({ name, description, price, category }: CardProps) {
+export default function Card({ id, name, description, price, category }: CardProps) {
   const icon = categoryIcons[category?.toLowerCase()];
-
+  const router = useRouter();
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-300 hover:shadow-md transition-shadow flex flex-col overflow-hidden">
+    <div onClick={() => router.push(`/services/${id}`)} className="bg-white rounded-lg shadow-sm border border-gray-300 hover:shadow-md transition-shadow flex flex-col overflow-hidden">
       {/* Top banner */}
       <div className="w-full h-32 bg-blue-100 flex items-center justify-center">
         <div className="w-full h-32 bg-blue-100 flex items-center justify-center text-blue-600 text-4xl opacity-40">
