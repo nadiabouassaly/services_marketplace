@@ -1,7 +1,7 @@
 "use client";
 
-import { FaSlidersH, FaBook, FaUser, FaSoap, FaDog, FaBroom, FaBaby, FaCar } from 'react-icons/fa';
-import { useState, createContext, useContext, useEffect } from 'react';
+import { FaSlidersH, FaBook, FaUser, FaDog, FaBroom, FaBaby, FaCar } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation'; 
 import React from 'react';
 

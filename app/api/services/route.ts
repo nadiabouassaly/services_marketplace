@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { randomUUID } from 'crypto';
+import { UserService } from '@/types/userService';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
       ? String(body.userprofile_id).trim()
       : '05975042-38a2-47cc-b785-03716544c5cd';
 
-    const newService: any = {
+    const newService: UserService = {
       services_id: randomUUID(),
       userprofile_id,
       name: String(body.name).trim(),
@@ -67,7 +68,8 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(data, { status: 201 });
-  } catch (error: any) {
-    return NextResponse.json({ message: error?.message ?? 'Unknown error' }, { status: 500 });
+  } catch (error: unknown) {
+  const message = error instanceof Error ? error.message : 'Unknown error';
+  return NextResponse.json({ message }, { status: 500 });
   }
 }
