@@ -41,7 +41,7 @@ export async function createService(service: Omit<UserService, 'services_id' | '
 
     if (!response.ok) {
         const text = await response.text();
-        throw new Error(`Failed to create service: ${text}`);
+        throw new Error('Failed to create service: ${text}');
     }
 
     const created = await response.json();

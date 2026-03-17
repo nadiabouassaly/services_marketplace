@@ -1,4 +1,3 @@
-
 "use client";
 
 import { FormEvent, useState } from "react";
@@ -37,6 +36,10 @@ export default function Post() {
       setStatus("Price must be a non-negative number.");
       return;
     }
+
+    /*test*/ 
+    /*test1*/ 
+    /*test2*/ 
 
     setIsSubmitting(true);
 
@@ -154,4 +157,3 @@ export default function Post() {
     </main>
   );
 }
-
