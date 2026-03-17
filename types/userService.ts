@@ -22,4 +22,14 @@ export type UserService = {
     location : string
     created_at : string
     category : "Tutoring" | "Babysitting" | "Elderly Care" | "Home Maintenance" | "Pet Care" | "Transportation" | "Other"
-} 
+}
+
+export type image = {
+    id : number;
+    upload_at : string;
+    user_id : string;
+    service_id : string;
+    file_path : string;
+    image_type : string;
+    is_primary? : boolean;
+}
