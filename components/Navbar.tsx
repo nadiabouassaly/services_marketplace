@@ -6,6 +6,7 @@ import ProfileIcon from './ProfileIcon';
 import { FaSearch } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
+import { useSearchParams } from 'react-router-dom';
 
 export default function Navbar() {
   const router = useRouter();
@@ -29,6 +30,7 @@ export default function Navbar() {
 }
 
 function SearchBar(){
+
   return (
     <div className="flex-1 mx-6 relative max-w-md">
           <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm" />
