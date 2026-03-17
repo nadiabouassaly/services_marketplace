@@ -13,21 +13,23 @@ export async function getServiceByCategory(categories : string[], currentPage: n
     const to = from + 12 - 1;
     const price = Number(maxPrice);
 
-    if(categories.length == 0){
-        const {data, count} = await supabase.from('services').select('*',{ count: 'exact' }).lte('price', price).range(from, to)
-        return {
-        services: data as UserService[],
-        totalPages: count ?? 0
-        }
+    let query = supabase.from('services').select('*', { count: 'exact' });
+
+    if (categories.length > 0) {
+      query = query.in('category', categories);
     }
     
-    else{
-    const {data, count} = await supabase.from('services').select('*', { count: 'exact'} ).in('category', categories).lte('price', price).range(from, to)
-    return {
-        services: data as UserService[],
-        totalPages: count ?? 0
-        }
+    if (maxPrice < 100) {
+      query = query.lte('price', maxPrice);
     }
+    
+    query = query.range(from, to);
+    const { data, count } = await query;
+    
+    return {
+      services: data as UserService[],
+      totalPages: count ?? 0,
+    };
 }
 
 export async function createService(service: Omit<UserService, 'services_id' | 'created_at' | 'provider' | 'userprofile_id'>) {
