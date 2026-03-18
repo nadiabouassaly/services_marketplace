@@ -8,6 +8,7 @@ import { getImages } from "@/lib/images";
 import { FaMoneyBillAlt } from "react-icons/fa";
 import { FaLocationArrow } from "react-icons/fa";
 import { FaBook, FaUser, FaBroom, FaDog, FaBaby, FaCar } from 'react-icons/fa';
+import { Suspense } from "react";
 type PageProps = {
     params : Promise<{ id: UUID }>;
 }
@@ -30,6 +31,7 @@ export default async function ServicePage({params }: PageProps){
  if(!service) return <p className="styles.notFound">Service Not Found :(</p>;
 
       return (
+    <Suspense fallback={<div>Loading...</div>}>
     <main className={styles.page}>
         
         <div className={styles.container}> 
@@ -81,5 +83,6 @@ export default async function ServicePage({params }: PageProps){
           </div>
         </div>
     </main>
+    </Suspense>
   );
 }

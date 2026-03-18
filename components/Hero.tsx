@@ -1,3 +1,5 @@
+"use client"
+
 export default function Hero() {
   return (
     <section className="w-full bg-white py-9 relative overflow-hidden">

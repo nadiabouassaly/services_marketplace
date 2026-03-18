@@ -1,3 +1,5 @@
+"use client"
+
 import { useState } from 'react';
 import { FaSlidersH, FaBook, FaUser, FaBroom, FaDog, FaBaby, FaCar } from 'react-icons/fa';
 
