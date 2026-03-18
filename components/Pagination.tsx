@@ -65,7 +65,6 @@ export default function Pagination(numOfPages: ButtonProps){
 
     }, [searchParams]);
 
-    //next page
     const nextPage = () =>{
 
         if(currentPage != numOfPages.props){
