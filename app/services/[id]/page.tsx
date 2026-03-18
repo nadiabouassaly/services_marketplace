@@ -1,14 +1,25 @@
 import { getServicesById } from "@/lib/services";
 import { timeAgo } from "@/lib/services";
 import { UUID } from "crypto";
-import { FaUser } from "react-icons/fa";
 import styles from "./page.module.css";
 import ImageCarousel from "@/components/ImageCarousel";
 import { image } from "@/types/userService";
 import { getImages } from "@/lib/images";
+import { FaMoneyBillAlt } from "react-icons/fa";
+import { FaLocationArrow } from "react-icons/fa";
+import { FaBook, FaUser, FaBroom, FaDog, FaBaby, FaCar } from 'react-icons/fa';
 type PageProps = {
     params : Promise<{ id: UUID }>;
 }
+
+const categoryIcons: Record<string, React.ReactNode> = {
+  'Tutoring': <FaBook />,
+  'Elderly Care': <FaUser />,
+  'Home Maintenance': <FaBroom />,
+  'Pet Care': <FaDog />,
+  'Babysitting': <FaBaby />,
+  'Transportation': <FaCar />,
+};
 
 export default async function ServicePage({params }: PageProps){
     const resolvedParams = await params;
@@ -25,7 +36,6 @@ export default async function ServicePage({params }: PageProps){
             <div className={styles.titleBox}>
               <div className={styles.row}>
                 <div  className={styles.title}>{service.name} </div>
-                <div  className={styles.price}>  ${service.price}</div>
                 </div>
                 <p className={styles.subtitle}>POSTED {timeAgo(service.created_at)}</p>
             </div>
@@ -51,7 +61,12 @@ export default async function ServicePage({params }: PageProps){
             <p className={styles.description}>
               {service.description}
             </p>
-            
+
+              <div className={styles.infoBox}>
+              <div className={styles.info}><FaMoneyBillAlt className={styles.logo}/>${service.price}</div>
+              <div className={styles.info}><FaLocationArrow className={styles.logo}/>{service.location}</div>
+              <div className={styles.info}> <span className={styles.logo}>{categoryIcons[service.category]}</span>{service.category}</div>
+            </div>
 
             {/* Buttons */}
             <div className={styles.actions}>

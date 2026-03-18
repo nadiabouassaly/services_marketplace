@@ -18,7 +18,7 @@ export default function Post() {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [location, setLocation] = useState("");
-  const [category, setCategory] = useState(categories[0]);
+  const [category, setCategory] = useState("");
   const [status, setStatus] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -73,7 +73,7 @@ export default function Post() {
   };
 
   return (
-    <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+    <main className="max-w-3xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 md:p-8">
         <h1 className="text-2xl font-bold text-slate-900 mb-4">Create Service</h1>
 
@@ -132,6 +132,9 @@ export default function Post() {
               required
               className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:ring focus:ring-blue-200 outline-none"
             >
+              <option value="" disabled hidden className="text-gray-400">
+                Select a category
+              </option>
               {categories.map((option) => (
                 <option key={option} value={option}>
                   {option}
@@ -145,7 +148,7 @@ export default function Post() {
             disabled={isSubmitting}
             className="rounded-lg bg-blue-600 text-white py-2 px-4 font-semibold transition hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? "Saving..." : "Create Service"}
+            {isSubmitting ? "Saving..." : "Post Service"}
           </button>
         </form>
 
