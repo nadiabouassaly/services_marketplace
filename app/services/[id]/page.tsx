@@ -30,38 +30,34 @@ export default async function ServicePage({ params }: PageProps) {
   return (
 <main className="min-h-screen bg-white py-10">
 
-{/* Same container as navbar */}
 <div className="max-w-7xl mx-auto px-4">
+  <div className="max-w-4xl mx-auto">
 
-  {/* Content stuck to left inside it */}
-  <div className="max-w-4xl">
-
-    {/* Title + Provider row */}
-    <div className="flex items-start justify-between mb-8">
+    {/* Title + Provider */}
+    <div className="flex items-start justify-between mb-6">
       <div>
-        <h1 className="text-4xl font-normal text-gray-900">{service.name}</h1>
-        <p className="text-xs text-gray-400 mt-1">POSTED {timeAgo(service.created_at)}</p>
+        <h1 className="text-4xl font-bold text-gray-900">{service.name}</h1>
+        <p className="text-sm text-gray-400 mt-1">Posted {timeAgo(service.created_at)}</p>
       </div>
-      <div className={styles.provider}>
-        <div className={styles.avatar}><FaUser /></div>
-        <div>
-          <p className={styles.providerName}>Provider</p>
-          <p className={styles.providerRole}>Information</p>
-        </div>
-      </div>
+      <div className={styles.avatar}><FaUser /></div>
     </div>
 
-    {/* Body */}
     <ImageCarousel images={images} />
-    <p className={styles.description}>{service.description}</p>
-    <div className={styles.infoBox}>
-      <div className={styles.info}><FaMoneyBillAlt className={styles.logo}/>${service.price}</div>
-      <div className={styles.info}><FaLocationArrow className={styles.logo}/>{service.location}</div>
-      <div className={styles.info}><span className={styles.logo}>{categoryIcons[service.category]}</span>{service.category}</div>
+    <div className="flex items-center gap-6 mt-3 mb-2 text-gray-600">
+      <span className="text-3xl font-semibold text-blue-600">${service.price}</span>
+      <span className="flex items-center gap-2"><FaLocationArrow className="text-blue-700"/>{service.location}</span>
+      <span className="flex items-center gap-2"> <span className="text-blue-700 text-xl">{categoryIcons[service.category]}</span> <span className="text-base">{service.category}</span></span>
     </div>
-    <div className={styles.actions}>
-      <button className={styles.btnSecondary}>Message</button>
-      <button className={styles.btnPrimary}>Request Service</button>
+    
+    <p className="text-lg text-black leading-relaxed mb-6">{service.description}</p>
+    
+    <div className="flex gap-3 mt-6">
+      <button className="flex-1 px-4 py-2 rounded-md border border-[#0a74ff] text-[#0a74ff] bg-white hover:bg-blue-50 transition-colors duration-300 ease-in-out">
+        Message
+      </button>
+      <button className="flex-1 px-4 py-2 rounded-md bg-[#0a74ff] text-white hover:bg-[#1166f0] transition-colors duration-300 ease-in-out">
+        Request Service
+      </button>
     </div>
 
   </div>
