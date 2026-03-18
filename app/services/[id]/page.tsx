@@ -1,7 +1,6 @@
 import { getServicesById } from "@/lib/services";
 import { timeAgo } from "@/lib/services";
 import { UUID } from "crypto";
-import { FaUser } from "react-icons/fa";
 import styles from "./page.module.css";
 import ImageCarousel from "@/components/ImageCarousel";
 import { image } from "@/types/userService";
