@@ -16,9 +16,9 @@ export default async function HomePage({searchParams}: {searchParams: Promise<{ 
   const filters = filtersParam?.split(",").filter(Boolean) ?? [];
   const page = Number(resolvedParams.page) || 1;
   const priceParam = resolvedParams.maxPrice ? Number(resolvedParams.maxPrice) : 100;
-  const search = resolvedParams.search ?? ""
+  // const search = resolvedParams.search ?? ""
 
-  const { services, totalPages } = await getServiceByCategory(filters, page, priceParam, search);
+  const { services, totalPages } = await getServiceByCategory(filters, page, priceParam,"");
 
   const numOfPages = Math.ceil(totalPages / 12);
 
