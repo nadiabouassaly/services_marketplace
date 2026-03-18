@@ -6,8 +6,24 @@
 
 .container {
   max-width: 1080px;
+  margin: 0 auto;
   margin-bottom: 50px;
   padding-left: 50px;
+  padding-right: 50px;
+}
+
+.titleBox {
+  max-width: 80rem;   /* same as max-w-7xl */
+  margin: 0 auto;
+  padding: 0 1rem;    /* same as px-4 */
+  margin-bottom: 20px;
+}
+
+.box {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+  margin-bottom: 20px;
 }
 
 .card {

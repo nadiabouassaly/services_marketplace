@@ -3,13 +3,11 @@ import { timeAgo } from "@/lib/services";
 import { UUID } from "crypto";
 import styles from "./page.module.css";
 import ImageCarousel from "@/components/ImageCarousel";
-import { image } from "@/types/userService";
 import { getImages } from "@/lib/images";
-import { FaMoneyBillAlt } from "react-icons/fa";
-import { FaLocationArrow } from "react-icons/fa";
-import { FaBook, FaUser, FaBroom, FaDog, FaBaby, FaCar } from 'react-icons/fa';
+import { FaMoneyBillAlt, FaLocationArrow, FaBook, FaUser, FaBroom, FaDog, FaBaby, FaCar } from 'react-icons/fa';
+
 type PageProps = {
-    params : Promise<{ id: UUID }>;
+  params: Promise<{ id: UUID }>;
 }
 
 const categoryIcons: Record<string, React.ReactNode> = {
@@ -21,65 +19,54 @@ const categoryIcons: Record<string, React.ReactNode> = {
   'Transportation': <FaCar />,
 };
 
-export default async function ServicePage({params }: PageProps){
-    const resolvedParams = await params;
-    const id = resolvedParams.id;
- const service = await getServicesById(id);
- const images = await getImages();
+export default async function ServicePage({ params }: PageProps) {
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
+  const service = await getServicesById(id);
+  const images = await getImages();
 
- if(!service) return <p className="styles.notFound">Service Not Found :(</p>;
+  if (!service) return <p className={styles.notFound}>Service Not Found :(</p>;
 
-      return (
-    <main className={styles.page}>
-        
-        <div className={styles.container}> 
-            <div className={styles.titleBox}>
-              <div className={styles.row}>
-                <div  className={styles.title}>{service.name} </div>
-                </div>
-                <p className={styles.subtitle}>POSTED {timeAgo(service.created_at)}</p>
-            </div>
+  return (
+<main className="min-h-screen bg-white py-10">
+
+{/* Same container as navbar */}
+<div className="max-w-7xl mx-auto px-4">
+
+  {/* Content stuck to left inside it */}
+  <div className="max-w-4xl">
+
+    {/* Title + Provider row */}
+    <div className="flex items-start justify-between mb-8">
+      <div>
+        <h1 className="text-4xl font-normal text-gray-900">{service.name}</h1>
+        <p className="text-xs text-gray-400 mt-1">POSTED {timeAgo(service.created_at)}</p>
+      </div>
+      <div className={styles.provider}>
+        <div className={styles.avatar}><FaUser /></div>
+        <div>
+          <p className={styles.providerName}>Provider</p>
+          <p className={styles.providerRole}>Information</p>
         </div>
-        <div className={styles.box}>
-            <div className={styles.provider}>
-                <div className="avatar">
-                  <FaUser />
-                </div>
-            <div>
-                <p className={styles.providerName}>Provider</p>
-            <p className={styles.providerRole}>Information</p>
-        </div>
-        </div>
-        </div>
-    
+      </div>
+    </div>
 
-        <div className={styles.container}> 
-          <div className={styles.body}>
-            <div>
-              <ImageCarousel images = {images} />
-            </div>
-            <p className={styles.description}>
-              {service.description}
-            </p>
+    {/* Body */}
+    <ImageCarousel images={images} />
+    <p className={styles.description}>{service.description}</p>
+    <div className={styles.infoBox}>
+      <div className={styles.info}><FaMoneyBillAlt className={styles.logo}/>${service.price}</div>
+      <div className={styles.info}><FaLocationArrow className={styles.logo}/>{service.location}</div>
+      <div className={styles.info}><span className={styles.logo}>{categoryIcons[service.category]}</span>{service.category}</div>
+    </div>
+    <div className={styles.actions}>
+      <button className={styles.btnSecondary}>Message</button>
+      <button className={styles.btnPrimary}>Request Service</button>
+    </div>
 
-              <div className={styles.infoBox}>
-              <div className={styles.info}><FaMoneyBillAlt className={styles.logo}/>${service.price}</div>
-              <div className={styles.info}><FaLocationArrow className={styles.logo}/>{service.location}</div>
-              <div className={styles.info}> <span className={styles.logo}>{categoryIcons[service.category]}</span>{service.category}</div>
-            </div>
+  </div>
+</div>
 
-            {/* Buttons */}
-            <div className={styles.actions}>
-              <button className={styles.btnSecondary}>
-                Message
-              </button>
-              <button className={styles.btnPrimary}>
-                Request Service
-              </button>
-            </div>
-
-          </div>
-        </div>
-    </main>
+</main>
   );
 }
