@@ -44,7 +44,7 @@ export default async function ServicePage({ params }: PageProps) {
 
     <ImageCarousel images={images} />
     <div className="flex items-center gap-6 mt-3 mb-2 text-gray-600">
-      <span className="text-xl font-semibold text-blue-600">${service.price}</span>
+      <span className="text-lg font-semibold text-blue-600">${service.price}</span>
       <span className="flex items-center gap-2"><FaLocationArrow className="text-blue-700"/>{service.location}</span>
       <span className="flex items-center gap-2"> <span className="text-blue-700 text-xl">{categoryIcons[service.category]}</span> <span className="text-base">{service.category}</span></span>
     </div>
