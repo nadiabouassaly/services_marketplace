@@ -12,7 +12,7 @@ import React from 'react';
 export default async function HomePage({searchParams}: {searchParams: Promise<{ filters?: string; page?: string; maxPrice?: string, search?: string }>}) {
   
   const resolvedParams = await searchParams;
-  
+  //
   const filtersParam = resolvedParams.filters;
   const filters = filtersParam?.split(",").filter(Boolean) ?? [];
   const page = Number(resolvedParams.page) || 1;
