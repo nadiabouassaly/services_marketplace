@@ -14,7 +14,7 @@ export default function ImageCarousel({ images } : ImageCarouselProps)  {
     const[currentIndex, setCurrentIndex] = useState(0);
 
     if (!images || images.length === 0) {
-        return <div>No images available</div>;
+        return <div></div>;
     }
 
     const containerStyles: React.CSSProperties = {
