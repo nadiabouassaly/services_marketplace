@@ -109,7 +109,6 @@ export default function Pagination(numOfPages: ButtonProps){
         }
 
         const mystyle = {
-
             backgroundColor: "#007BFF",
             color: "white"
         }

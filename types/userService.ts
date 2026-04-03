@@ -10,6 +10,7 @@ export type Profile = {
     profession : string
     email : string
     services?: UserService[]
+    phoneNumber: string
 }
 
 export type UserService = {

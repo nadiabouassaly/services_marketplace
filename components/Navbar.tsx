@@ -23,8 +23,8 @@ export default function Navbar() {
         {(pathName == "/") && <SearchBar/>}
 
         <div className="flex items-center space-x-4">
-          <ProfileIcon />
-          {(pathName == "/") && <NavbarButton onClick={()=>router.push("/Post")}>+ Post a Service</NavbarButton>}
+          {(pathName != "/Profile") && <ProfileIcon />}
+          {(pathName == "/" || pathName == "/Profile") && <NavbarButton onClick={()=>router.push("/Post")}>+ Post a Service</NavbarButton>}
         </div>
       </div>
     </nav>
