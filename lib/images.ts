@@ -2,11 +2,7 @@ import {image} from '@/types/userService'
 import {supabase} from '@/lib/db'
 
 export async function getImagesByServiceId(serviceId: string): Promise<image[]> {
-    const response = await fetch(`/api/images?serviceId=${serviceId}`);
-    if (!response.ok) {
-        throw new Error('Failed to fetch images');
-    }   
-    const data = await response.json();
+    const {data} = await supabase.from('images').select("*").eq('service_id', serviceId); 
     return data as image[];
 }
 
