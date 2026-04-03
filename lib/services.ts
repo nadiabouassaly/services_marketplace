@@ -16,12 +16,11 @@ export async function getServiceByCategory(categories : string[], currentPage: n
 
     let query = supabase.from('services').select('*', { count: 'exact' });
 
-    if (search && search.trim() !== "") {
+    if (search != "" && search.trim() !== "" ) {
  
       query = query.or(
       `name.ilike.%${search}%,description.ilike.%${search}%,category.ilike.%${search}%`
       );
-
     }
   
     if (categories.length > 0) {
