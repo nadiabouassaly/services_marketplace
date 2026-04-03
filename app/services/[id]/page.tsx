@@ -3,8 +3,8 @@ import { timeAgo } from "@/lib/services";
 import { UUID } from "crypto";
 import styles from "./page.module.css";
 import ImageCarousel from "@/components/ImageCarousel";
-import { getImages } from "@/lib/images";
-import { FaMoneyBillAlt, FaLocationArrow, FaBook, FaUser, FaBroom, FaDog, FaBaby, FaCar } from 'react-icons/fa';
+import { getImagesByServiceId } from "@/lib/images";
+import { FaMoneyBillAlt, FaLocationArrow, FaBook, FaUser, FaBroom, FaDog, FaBaby, FaCar, FaBusinessTime } from 'react-icons/fa';
 
 type PageProps = {
   params: Promise<{ id: UUID }>;
@@ -23,7 +23,7 @@ export default async function ServicePage({ params }: PageProps) {
   const resolvedParams = await params;
   const id = resolvedParams.id;
   const service = await getServicesById(id);
-  const images = await getImages();
+  const images = await getImagesByServiceId(service.services_id);
 
   if (!service) return <p className={styles.notFound}>Service Not Found :(</p>;
 
@@ -41,19 +41,20 @@ export default async function ServicePage({ params }: PageProps) {
       </div>
       <div className={styles.avatar}><FaUser /></div>
     </div>
-
-    <ImageCarousel images={images} />
+    { images? <ImageCarousel images={images} /> : null}
+    
     <div className="flex items-center gap-6 mt-3 mb-2 text-gray-600">
       <span className="text-lg font-semibold text-blue-600">${service.price}</span>
       <span className="flex items-center gap-2"><FaLocationArrow className="text-blue-700"/>{service.location}</span>
       <span className="flex items-center gap-2"> <span className="text-blue-700 text-xl">{categoryIcons[service.category]}</span> <span className="text-base">{service.category}</span></span>
+      {service.availability ? <span className="flex items-center gap-2"><FaBusinessTime className="text-blue-700"/>{service.availability}</span> : ""}
     </div>
     
     <p className="text-lg text-black leading-relaxed mb-6">{service.description}</p>
     
     <div className="flex gap-3 mt-6">
       <button className="flex-1 px-4 py-2 rounded-md border border-[#0a74ff] text-[#0a74ff] bg-white hover:bg-blue-50 transition-colors duration-300 ease-in-out">
-        Message
+        Review
       </button>
       <button className="flex-1 px-4 py-2 rounded-md bg-[#0a74ff] text-white hover:bg-[#1166f0] transition-colors duration-300 ease-in-out">
         Request Service
