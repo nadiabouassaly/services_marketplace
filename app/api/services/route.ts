@@ -59,6 +59,7 @@ export async function POST(request: NextRequest) {
       location: String(body.location).trim(),
       category: body.category as Category,
       created_at: new Date().toISOString(),
+      availability: ""
     };
 
     const { data, error } = await supabaseAdmin.from('services').insert([newService]).select().single();
