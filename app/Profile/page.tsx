@@ -8,7 +8,7 @@ import InfoComponent from "../../components/InfoComponent";
 
 export default async function ProfilePage(){
     
-    // NEED TO CHANGE BASED ON ID!!!!!
+    // NEED TO CHANGE BASED ON ID!!
     const id: UUID = "05975042-38a2-47cc-b785-03716544c5cd" ;
     const profile: Profile = await getProfileByID(id)
     const services: UserService[] = await getServices();
