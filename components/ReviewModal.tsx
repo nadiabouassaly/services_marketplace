@@ -5,7 +5,7 @@ import { addReview } from "@/lib/reviewsApi";
 
 type ReviewModalProps = {
   serviceId: string;
-  userId: string;
+  userId: string | null;
   onClose: () => void;
 };
 
