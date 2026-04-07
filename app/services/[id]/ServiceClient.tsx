@@ -5,6 +5,8 @@ import { timeAgo } from "@/lib/services";
 import styles from "./page.module.css";
 import ImageCarousel from "@/components/ImageCarousel";
 import ReviewModal from "@/components/ReviewModal";
+import { getReviewsForService } from "@/lib/reviewsApi";
+import { Review } from "@/types/review";
 import {FaLocationArrow, FaBook, FaUser, FaBroom, FaDog, FaBaby, FaCar, FaBusinessTime } from 'react-icons/fa';
 
 const categoryIcons: Record<string, React.ReactNode> = {
@@ -17,14 +19,31 @@ const categoryIcons: Record<string, React.ReactNode> = {
 };
 
 export default function ServiceClient({ service, images }: { service: any; images: any }) {
-    const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [average, setAverage] = useState(0);
+  const [count, setCount] = useState(0);
+  const [reviews, setReviews] = useState<Review[]>([]);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }: { data: { user: { id: string } | null } }) => {
       setUserId(data.user?.id ?? null);
     });
   }, []);
+
+  useEffect(() => {
+    async function fetchReviews() {
+      try {
+        const res = await getReviewsForService(service.services_id);
+        setAverage(res.averageRating);
+        setCount(res.count);
+        setReviews(res.reviews);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    if (service?.services_id) fetchReviews();
+  }, [service?.services_id]);
 
   if (!service) return <p className={styles.notFound}>Service Not Found :(</p>;
 
@@ -46,6 +65,25 @@ export default function ServiceClient({ service, images }: { service: any; image
 
           <div className="flex items-center gap-6 mt-3 mb-2 text-gray-600">
             <span className="text-lg font-semibold text-blue-600">${service.price}</span>
+
+            {count === 0 ? (
+              <span className="text-xs text-gray-400">No reviews</span>
+            ) : (
+              <div className="flex items-center gap-1 text-sm">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span
+                    key={star}
+                    className={star <= Math.floor(average) ? "text-[#0a74ff]" : "text-gray-300"}
+                  >
+                    ★
+                  </span>
+                ))}
+                <span className="text-s text-gray-600 ml-1">
+                  {average.toFixed(1)} ({count})
+                </span>
+              </div>
+            )}
+
             <span className="flex items-center gap-2"><FaLocationArrow className="text-blue-700" />{service.location}</span>
             <span className="flex items-center gap-2">
               <span className="text-blue-700 text-xl">{categoryIcons[service.category]}</span>
@@ -69,15 +107,51 @@ export default function ServiceClient({ service, images }: { service: any; image
             </button>
           </div>
 
+
+
+          {/* ── Reviews section ── */}
+          <div className="mt-10">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Reviews</h2>
+
+            {reviews.length === 0 ? (
+              <p className="text-sm text-gray-400">No reviews yet. Be the first to leave one!</p>
+            ) : (
+              <ul className="flex flex-col gap-4">
+                {reviews.map((review) => (
+                  <li key={review.id} className="border border-gray-200 rounded-lg p-4">
+                    {/* Stars row */}
+                    <div className="flex items-center gap-1 mb-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <span
+                          key={star}
+                          className={star <= review.rating ? "text-[#0a74ff]" : "text-gray-300"}
+                        >
+                          ★
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Comment (only if present) */}
+                    {review.comment && (
+                      <p className="text-sm text-gray-700 mt-1">{review.comment}</p>
+                    )}
+
+                    {/* Timestamp */}
+                    <p className="text-xs text-gray-400 mt-2">{timeAgo(review.created_at)}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
       </div>
 
       {showModal && (
-  <ReviewModal
-    serviceId={service.services_id} // this must be a real UUID from your DB
-    userId={null}                   // no login yet safe for nullable column
-    onClose={() => setShowModal(false)}
-  />
+        <ReviewModal
+          serviceId={service.services_id}
+          userId={null}
+          onClose={() => setShowModal(false)}
+        />
       )}
 
     </main>
