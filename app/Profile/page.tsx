@@ -2,7 +2,7 @@ import { FaUser } from "react-icons/fa";
 import Image from "next/image";
 import { UUID } from "crypto";
 import {Profile, UserService} from "@/types/userService" ;
-import { getProfileByID, getServiceByCategory, getServices, getServicesById } from "@/lib/services";
+import { getProfileByID, getServices, getServicesById} from "@/lib/services";
 import Card from "@/components/Card"
 import InfoComponent from "../../components/InfoComponent";
 
