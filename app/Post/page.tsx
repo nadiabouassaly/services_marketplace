@@ -57,6 +57,7 @@ export default function Post() {
           | "Pet Care"
           | "Transportation"
           | "Other",
+          availability: ""
       });
       setStatus("Service created successfully!");
       setName("");

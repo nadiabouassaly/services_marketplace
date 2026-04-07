@@ -1,4 +1,4 @@
-import {UserService} from '@/types/userService'
+import {UserService, Profile} from '@/types/userService'
 import {supabase} from '@/lib/db'
 import { UUID } from 'crypto';
 
@@ -16,12 +16,11 @@ export async function getServiceByCategory(categories : string[], currentPage: n
 
     let query = supabase.from('services').select('*', { count: 'exact' });
 
-    if (search && search.trim() !== "") {
+    if (search != "" && search.trim() !== "" ) {
  
       query = query.or(
       `name.ilike.%${search}%,description.ilike.%${search}%,category.ilike.%${search}%`
       );
-
     }
   
     if (categories.length > 0) {
@@ -35,8 +34,9 @@ export async function getServiceByCategory(categories : string[], currentPage: n
     query = query.range(from, to);
     const { data, count } = await query;
     
+    
     return {
-      services: data as UserService[],
+      services: (data as UserService[]) ?? [],
       totalPages: count ?? 0,
     };
 }
@@ -71,4 +71,9 @@ export function timeAgo(date: string): string {
   if (seconds < 86400) return (Math.floor(seconds / 3600) === 1? `${Math.floor(seconds / 3600)} hour ago` : `${Math.floor(seconds / 3600)} hours ago`);
   if (seconds < 2592000) return (Math.floor(seconds / 86400) === 1? `${Math.floor(seconds / 86400)} day ago` : `${Math.floor(seconds / 86400)} days ago`);
   return (Math.floor(seconds / 2592000) === 1 ? `${Math.floor(seconds / 2592000)} month ago` : `${Math.floor(seconds / 2592000)} months ago`);
+}
+
+export async function getProfileByID(id: UUID){
+    const {data} = await supabase.from('userprofile').select('*').eq('userprofile_id', id).single() ;
+    return data as Profile ;
 }

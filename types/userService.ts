@@ -10,6 +10,7 @@ export type Profile = {
     profession : string
     email : string
     services?: UserService[]
+    phoneNumber: string
 }
 
 export type UserService = {
@@ -21,6 +22,7 @@ export type UserService = {
     price : number
     location : string
     created_at : string
+    availability: string
     category : "Tutoring" | "Babysitting" | "Elderly Care" | "Home Maintenance" | "Pet Care" | "Transportation" | "Other"
 }
 
