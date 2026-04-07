@@ -16,12 +16,12 @@ export default function ReviewModal({ serviceId, userId, onClose }: ReviewModalP
 
   const handleSave = async () => {
     try {
-      await addReview({ service_id: serviceId, user_id: userId, rating, comment: comment || null });
+        await addReview({ service_id: serviceId, user_id: userId, rating, comment: comment || null });
       onClose();
       alert("Review saved!");
-    } catch (e) {
-      console.error(e);
-      alert("Failed to save review.");
+    } catch (e: any) {
+        console.error("Supabase error:", e);
+        alert(`Failed to save review: ${e.message || JSON.stringify(e)}`);
     }
   };
 
