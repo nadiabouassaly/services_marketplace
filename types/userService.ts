@@ -4,9 +4,8 @@ export type Profile = {
     middlename : string
     lastname : string
     userprofile_id : string
-    dateofbirth : Date
+    dateofbirth : string
     skills ?: string[]
-    rating : number
     profession : string
     email : string
     services?: UserService[]
