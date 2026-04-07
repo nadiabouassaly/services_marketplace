@@ -73,11 +73,11 @@ export default function ServiceClient({ service, images }: { service: any; image
       </div>
 
       {showModal && (
-        <ReviewModal
-          serviceId={service.services_id}
-          userId={userId ?? "placeholder"}
-          onClose={() => setShowModal(false)}
-        />
+  <ReviewModal
+    serviceId={service.services_id} // this must be a real UUID from your DB
+    userId={null}                   // no login yet, safe for nullable column
+    onClose={() => setShowModal(false)}
+  />
       )}
 
     </main>

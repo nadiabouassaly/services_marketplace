@@ -16,12 +16,12 @@ export default function ReviewModal({ serviceId, userId, onClose }: ReviewModalP
 
   const handleSave = async () => {
     try {
-      await addReview({ service_id: serviceId, user_id: userId, rating, comment: comment || null });
+        await addReview({ service_id: serviceId, user_id: userId, rating, comment: comment || null });
       onClose();
       alert("Review saved!");
-    } catch (e) {
-      console.error(e);
-      alert("Failed to save review.");
+    } catch (e: any) {
+        console.error("Supabase error:", e);
+        alert(`Failed to save review: ${e.message || JSON.stringify(e)}`);
     }
   };
 
@@ -47,7 +47,7 @@ export default function ReviewModal({ serviceId, userId, onClose }: ReviewModalP
 
         {/* Optional comment */}
         <textarea
-          className="border border-gray-300 rounded-md p-2 text-sm"
+          className="border border-gray-300 rounded-md p-2 text-sm resize-none"
           placeholder="You can write a review..."
           value={comment}
           onChange={(e) => setComment(e.target.value)}
@@ -56,13 +56,13 @@ export default function ReviewModal({ serviceId, userId, onClose }: ReviewModalP
         {/* Buttons */}
         <div className="flex justify-end gap-2 mt-2">
           <button
-            className="px-3 py-1 rounded-md border border-gray-400 hover:bg-gray-100"
+            className="flex-1 px-4 py-2 rounded-md border border-[#0a74ff] text-[#0a74ff] bg-white hover:bg-blue-50 transition-colors duration-300 ease-in-out"
             onClick={onClose}
           >
             Cancel
           </button>
           <button
-            className="px-3 py-1 rounded-md bg-blue-600 text-white hover:bg-blue-700"
+            className="flex-1 px-4 py-2 rounded-md bg-[#0a74ff] text-white hover:bg-[#1166f0] transition-colors duration-300 ease-in-out"
             onClick={handleSave}
           >
             Save
