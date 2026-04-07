@@ -1,10 +1,10 @@
 export type Review = {
   id: string;
-  serviceId: string;
-  userId: string;
+  created_at: string;
+  user_id: string;
+  service_id: string;
+  comment: string | null;
   rating: number;
-  comment?: string;
-  createdAt: string;
 };
 
 export type ReviewResponse = {

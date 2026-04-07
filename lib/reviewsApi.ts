@@ -1,7 +1,7 @@
 import { supabase } from '@/lib/db';
 import { Review, ReviewResponse } from '@/types/review';
 
-export async function addReview(review: Omit<Review, 'id' | 'createdAt'>): Promise<Review> {
+export async function addReview(review: Omit<Review, 'id' | 'created_at'>): Promise<Review> {
   const { data, error } = await supabase
     .from('reviews')
     .insert([review])
@@ -16,8 +16,8 @@ export async function getReviewsForService(serviceId: string): Promise<ReviewRes
   const { data, error } = await supabase
     .from('reviews')
     .select('*')
-    .eq('serviceId', serviceId)
-    .order('createdAt', { ascending: false });
+    .eq('service_id', serviceId)
+    .order('created_at', { ascending: false });
 
   if (error) throw error;
 
@@ -32,7 +32,7 @@ export async function getAverageRating(serviceId: string): Promise<number> {
   const { data, error } = await supabase
     .from('reviews')
     .select('rating')
-    .eq('serviceId', serviceId);
+    .eq('service_id', serviceId);
 
   if (error) throw error;
 
