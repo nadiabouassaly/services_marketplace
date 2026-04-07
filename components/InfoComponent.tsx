@@ -88,7 +88,7 @@ export default function InfoComponent(profile: InfoProp){
     const handleSave = async () => {
         const fullPhone = areaCode + " " + number
 
-        const filteredSkills = useSkills.filter(skill => skill.trim() !== "") // remove empty
+        const filteredSkills = useSkills.filter(skill => skill.trim() !== "") 
 
         const updatedProfile = {
          ...useProfile,
