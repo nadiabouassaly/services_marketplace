@@ -1,6 +1,9 @@
 "use client";
 import { FaBook, FaUser, FaBroom, FaDog, FaBaby, FaCar } from 'react-icons/fa';
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { getReviewsForService } from "@/lib/reviewsApi";
+
 
 type CardProps = {
   name: string;
@@ -20,9 +23,27 @@ const categoryIcons: Record<string, React.ReactNode> = {
   'transportation': <FaCar />,
 };
 
+
 export default function Card({ id, name, description, price, category }: CardProps) {
   const icon = categoryIcons[category?.toLowerCase()];
   const router = useRouter();
+
+  const [average, setAverage] = useState(0);
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    async function fetchReviews() {
+      try {
+        const res = await getReviewsForService(id);
+        setAverage(res.averageRating);
+        setCount(res.count);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    fetchReviews();
+  }, [id]);
+
   return (
     <div onClick={() => router.push(`/services/${id}`)} className="bg-white rounded-lg shadow-sm border border-gray-300 hover:shadow-md transition-shadow flex flex-col overflow-hidden">
       {/* Top banner */}
@@ -35,7 +56,29 @@ export default function Card({ id, name, description, price, category }: CardPro
       <div className="p-4 flex flex-col flex-1">
         <h3 className="text-md font-bold mb-2">{name}</h3>
         <p className="text-gray-700 text-sm leading-snug">{description}</p>
-        <p className="mt-auto text-right text-[#0a74ff] font-bold">${price}</p>
+        <div className="mt-auto flex justify-between items-center">
+          {/* LEFT: Reviews */}
+          {count === 0 ? (
+            <p className="text-xs text-gray-400">No reviews</p>
+          ) : (
+            <div className="flex items-center gap-1 text-sm">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <span
+                  key={star}
+                  className={star <= Math.floor(average) ? "text-[#0a74ff]" : "text-gray-300"}
+                >
+                  ★
+                </span>
+              ))}
+              <span className="text-xs text-gray-600 ml-1">
+                {average.toFixed(1)}
+              </span>
+            </div>
+          )}
+
+          {/* RIGHT: Price */}
+          <p className="text-[#0a74ff] font-bold">${price}</p>
+        </div>
       </div>
     </div>
   );
