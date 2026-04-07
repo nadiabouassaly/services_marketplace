@@ -75,7 +75,7 @@ export default function ServiceClient({ service, images }: { service: any; image
       {showModal && (
   <ReviewModal
     serviceId={service.services_id} // this must be a real UUID from your DB
-    userId={null}                   // no login yet, safe for nullable column
+    userId={null}                   // no login yet safe for nullable column
     onClose={() => setShowModal(false)}
   />
       )}
