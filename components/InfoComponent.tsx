@@ -4,6 +4,7 @@ import { Profile } from "@/types/userService"
 import { useContext, useState, createContext, useEffect, useRef} from "react";
 import Image from "next/image";
 import updateProfile from "@/lib/profile";
+import { z } from "zod";
 
 const UserContext = createContext(false) ;
 const ContextProvider = createContext<string[]>([]);
@@ -14,8 +15,8 @@ type InfoProp = {
 
 type SkillProp = {
     props: string[]
-    skills: string[]
-    setSkills: React.Dispatch<React.SetStateAction<string[]>>
+    skillsArray: string[]
+    setSkillsArray: React.Dispatch<React.SetStateAction<string[]>>
 };
 
 export default function InfoComponent(profile: InfoProp){
@@ -24,8 +25,8 @@ export default function InfoComponent(profile: InfoProp){
     const [useValidInputs, setValidInputs] = useState(true) ;
     const [useSaving, setSaving] = useState(false);
     const [useProfile, setProfile] = useState(profile.prop)
+    const [error, setError] = useState<z.ZodError | null>(null);
 
-    
     const date = new Date(useProfile.dateofbirth) ;
     const str = date.toLocaleDateString("en-US", {year: "numeric",month: "long",day: "numeric"});
 
@@ -33,7 +34,7 @@ export default function InfoComponent(profile: InfoProp){
     const index = phoneNumber.indexOf(" ")
     const areaCode = phoneNumber.substring(0, index);
     const number = phoneNumber.substring(index+1);
-
+    
     const [phone, setPhone] = useState({
     areaCode: areaCode,
     number: number
@@ -68,37 +69,135 @@ export default function InfoComponent(profile: InfoProp){
         paddingLeft: "11px",
         marginBottom: "21px"
     };
+
+    const addButton ={
+        position: "absolute" as const,
+        top: 6,
+        right: 4,
+        width: 28,
+        height: 28,
+        borderRadius: "50%",
+        fontSize: "20px",
+        lineHeight: "26px",   // slightly less than height centers the + visually
+        textAlign: "center" as const,
+        background: "white",
+        cursor: "pointer",
+        padding: 0,
+        color:"#007BFF"
+    };
+
+    // for validating the input fields 
+    const lettersOnly = /^[A-Za-z\s]+$/;
+
+    const userSchema = z.object({
+    firstname: z.string()
+    .trim()
+    .min(2, "Please fill all fields marked with (*)")
+    .regex(lettersOnly, "Please enter a valid name."),
+
+    lastname: z.string()
+    .trim()
+    .min(2, "Please fill all fields marked with (*)")
+    .regex(lettersOnly, "Please enter a valid name."),
+
+    phoneNumber: z.string()
+    .min(7, "Please enter a valid phone number.")
+    .regex(/^\d+$/, "Please enter a valid phone number."),
+
+    areaCode: z.string()
+    .min(1, "Please enter a valid area code.")
+    .regex(/^\+?\d+$/, "Please enter a valid area code."),
+    email: z.string()
+    .min(1, "Please fill all fields marked with (*)")
+    .email("Please enter a valid email address."),
+
+    skills: z.array(
+    z.string()
+    .trim()
+    .min(2, "Too short")
+    .regex(lettersOnly, "Only letters allowed")
+    ),
+
+    profession: z.string()
+    .trim()
+    .min(2,"Please fill all fields marked with (*)")
+    .regex(lettersOnly, "Please enter a valid profession.")
+    .optional()
+    .or(z.literal("")),
+
+    dateofbirth: z.string()
+    .min(1, "Please fill all fields marked with (*)")
+    .refine((val) => {
+    const dob = new Date(val);
+    const today = new Date();
+    return dob <= today;
+    }, "Date of birth cannot be in the future.")
+    .refine((val) => {
+    const dob = new Date(val);
+    const today = new Date();
+    const age = today.getFullYear() - dob.getFullYear();
+    const monthDiff = today.getMonth() - dob.getMonth();
+    const dayDiff = today.getDate() - dob.getDate();
+    const actualAge = monthDiff < 0 || (monthDiff === 0 && dayDiff < 0) ? age - 1 : age;
+    return actualAge >= 14;
+    }, "You must be at least 14 years old."),
+    });
+
     
     const onSave=(e: React.FormEvent<HTMLFormElement>)=>{
 
         e.preventDefault();
         setSaving(true);
 
-        const form = e.currentTarget;
-        if (form.checkValidity()) {
+        const result = userSchema.safeParse(tempProfile);
+
+        if(result.success){
         setValidInputs(true);
         setEditing(false);
         handleSave() ;
-        } else {
+        }
+
+        else {
+        setError(result.error);
         setValidInputs(false);
         }
     }
 
-    
-    const handleSave = async () => {
-        const fullPhone = areaCode + " " + number
+    const fullPhone = areaCode + " " + number
+    const filteredSkills = useSkills.filter(skill => skill.trim() !== "") 
 
-        const filteredSkills = useSkills.filter(skill => skill.trim() !== "") 
-
-        const updatedProfile = {
+    const updatedProfile = {
          ...useProfile,
         phoneNumber: fullPhone,
         skills: filteredSkills
     }
+
+    const tempProfile={
+        ...useProfile,
+        areaCode: phone.areaCode,
+        phoneNumber: phone.number,
+        skills: filteredSkills
+
+    }
+    const handleSave = async () => {
+
         const error  = await updateProfile(profile.prop.userprofile_id, updatedProfile)
     
         setProfile(updatedProfile)
         setSkills(filteredSkills) // update local state too so display is clean
+    }
+
+    const firstError = error
+    ? (Object.values(error.flatten().fieldErrors).flat()[0] as string)
+    : null;
+
+    //Upload Profile Picture from the user
+    const fileInputRef = useRef<HTMLInputElement>(null)
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    console.log(file) // do whatever you need with the file
     }
 
     return(
@@ -108,7 +207,13 @@ export default function InfoComponent(profile: InfoProp){
             <div style={{width: "275px"}}>
 
             <div style={{paddingLeft: "70px"}}>
-            <Image src={"/profileIcon.jpg"} alt="Default Profile Image" className = "rounded-full object-cover border-2 border-[#007bffeb] shadow-[0_0_5px_#B0BEC5] mt-1" width={120} height={120}/>
+
+            <div style={{position:"relative", width:"120px", height:"127px"}}>
+            <Image src={useProfile.profilePicture || "/profileIcon.jpg"} alt="Default Profile Image" className = "rounded-full object-cover border-2 border-[#007bffeb] shadow-[0_0_5px_#B0BEC5] mt-1" width={120} height={120}/>
+            {useEditing == true && <input type="file" ref={fileInputRef} onChange={handleFileChange} style={{ display: "none" }} accept="image/*"/>}
+            {useEditing == true && <button type="button"style={addButton} className="border-1 border-gray-350 shadow-[0_0_5px_#B0BEC5]" onClick={() => fileInputRef.current?.click()}>+</button>}
+            </div>
+
             {useEditing != true && <button style={buttonStyle} onClick={()=>setEditing(true)}>Edit Profile</button>}
             {useEditing == true && <button type = "submit" style={buttonStyle2} >Save changes</button>}
             </div>
@@ -117,7 +222,7 @@ export default function InfoComponent(profile: InfoProp){
             
             <div style={{ display: "flex", flexDirection: "column"}}>
             <h1 className = "text-4xl font-bold mb-4.5" style={{color: "#1460b1"}}>My Profile</h1> 
-            {useValidInputs == false && useSaving == true && <p style={{marginTop:"-7px", marginBottom:"5px", fontSize:"15px", color:"red"}}>Please fill all mandatory fields marked with (*)</p>}
+            {useValidInputs == false && useSaving == true && <p style={{marginTop:"-7px", marginBottom:"5px", fontSize:"15px", color:"red"}}>{firstError}</p>}
             <div className="flex items-start gap-5">
             
             <div>
@@ -130,20 +235,20 @@ export default function InfoComponent(profile: InfoProp){
                 <div>
                     <p style={{color: "#4d5055", fontSize: "12px"}}>FIRST NAME {useEditing == true && <span style={{color: "red"}}>*</span>} </p>
                     {useEditing == false && <p style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "11px"}}>{useProfile.firstname}</p>}
-                    {useEditing == true && <input required id="firstName" onChange={(e) => {if (e.currentTarget.validity.valid){setValidInputs(true)}; setProfile({ ...useProfile, firstname: e.target.value })}  } style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "11px", resize:"none"}} defaultValue={useProfile.firstname}/>}
+                    {useEditing == true && <input name="firstName" required id="firstName" onChange={(e) => {if (e.currentTarget.validity.valid){setValidInputs(true)}; setProfile({ ...useProfile, firstname: e.target.value })}  } style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "11px", resize:"none"}} defaultValue={useProfile.firstname}/>}
                 </div>
 
                 <div>
                     <p style={{color: "#4d5055", fontSize: "12px"}}>LAST NAME {useEditing == true && <span style={{color: "red"}}>*</span>} </p>
                     {useEditing == false && <p style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width: "125px", marginBottom: "11px"}}>{useProfile.lastname}</p>}
-                    {useEditing == true && <input required onChange={(e) => {if (e.currentTarget.validity.valid){setValidInputs(true)}; setProfile({ ...useProfile, lastname: e.target.value })}  } onInvalid={()=>setValidInputs(false)} style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "11px", resize:"none"}} defaultValue={useProfile.lastname}/>}
+                    {useEditing == true && <input name="lastName" required onChange={(e) => {if (e.currentTarget.validity.valid){setValidInputs(true)}; setProfile({ ...useProfile, lastname: e.target.value })}  } onInvalid={()=>setValidInputs(false)} style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "11px", resize:"none"}} defaultValue={useProfile.lastname}/>}
                 </div>
 
                 </div>
 
                 <p style={{color: "#4d5055", fontSize: "12px"}}>DATE OF BIRTH {useEditing == true && <span style={{color: "red"}}>*</span>} </p>
                 {useEditing == false && <p style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "17px"}}>{str}</p>}
-                {useEditing == true && <input required onInvalid={()=>setValidInputs(false)} type="date" onChange={(e) => {if (e.currentTarget.validity.valid){setValidInputs(true)}; setProfile({ ...useProfile, dateofbirth: e.target.value })}  } style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "11px", resize:"none"}} defaultValue={useProfile.dateofbirth}/>}
+                {useEditing == true && <input name="dateOfBirth" required onInvalid={()=>setValidInputs(false)} type="date" onChange={(e) => {if (e.currentTarget.validity.valid){setValidInputs(true)}; setProfile({ ...useProfile, dateofbirth: e.target.value })}  } style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "11px", resize:"none"}} defaultValue={useProfile.dateofbirth}/>}
 
             </div>
 
@@ -156,19 +261,19 @@ export default function InfoComponent(profile: InfoProp){
                 <div>
                     <p style={{color: "#4d5055", fontSize: "12px"}}>AREA CODE {useEditing == true && <span style={{color: "red"}}>*</span>} </p>
                     {useEditing == false && <p style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "9px", width:"125px", marginBottom: "11px"}}>{phone.areaCode}</p>}
-                    {useEditing == true && <input required onInvalid={()=>setValidInputs(false)} onChange={(e) => {if (e.currentTarget.validity.valid){setValidInputs(true); setPhone({ ...phone, areaCode: e.target.value }) }}} style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "9px", width:"125px", marginBottom: "11px", resize:"none"}} defaultValue={phone.areaCode}/>}
+                    {useEditing == true && <input name="areaCode" required onInvalid={()=>setValidInputs(false)} onChange={(e) => {if (e.currentTarget.validity.valid){setValidInputs(true); setPhone({ ...phone, areaCode: e.target.value }) }}} style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "9px", width:"125px", marginBottom: "11px", resize:"none"}} defaultValue={phone.areaCode}/>}
                 </div>
 
                 <div>
                     <p style={{color: "#4d5055", fontSize: "12px"}}>PHONE NUMBER {useEditing == true && <span style={{color: "red"}}>*</span>} </p>
                     {useEditing == false && <p style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width: "125px", marginBottom: "11px"}}>{phone.number}</p>}
-                    {useEditing == true && <input required onInvalid={()=>setValidInputs(false)} onChange={(e) => {if (e.currentTarget.validity.valid){setValidInputs(true); setPhone({ ...phone, number: e.target.value }) }}} style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "11px", resize:"none"}} defaultValue={phone.number}/>}
+                    {useEditing == true && <input name="phoneNumber" required onInvalid={()=>setValidInputs(false)} onChange={(e) => {if (e.currentTarget.validity.valid){setValidInputs(true); setPhone({ ...phone, number: e.target.value }) }}} style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "11px", resize:"none"}} defaultValue={phone.number}/>}
                 </div>
 
             </div>
             <p style={{color: "#4d5055", fontSize: "12px"}}>EMAIL {useEditing == true && <span style={{color: "red"}}>*</span>} </p>
             {useEditing == false && <p style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"266px", marginBottom: "17px"}}>{useProfile.email}</p>}
-            {useEditing == true && <input required onInvalid={()=>setValidInputs(false)} type="email" onChange={(e) => {if (e.currentTarget.validity.valid){setValidInputs(true); setProfile({ ...useProfile, email: e.target.value })}  }} style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"266px", marginBottom: "17px", resize:"none"}} defaultValue={useProfile.email}/>}
+            {useEditing == true && <input name="email" required onInvalid={()=>setValidInputs(false)} type="email" onChange={(e) => {if (e.currentTarget.validity.valid){setValidInputs(true); setProfile({ ...useProfile, email: e.target.value })}  }} style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"266px", marginBottom: "17px", resize:"none"}} defaultValue={useProfile.email}/>}
             </div>
             </div> {/*end of flex- gap-5 div*/}
 
@@ -180,17 +285,17 @@ export default function InfoComponent(profile: InfoProp){
                 <div>
                 <p style={{color: "#4d5055", fontSize: "12px"}}>PROFESSION</p>
                 {useEditing == false && <p style={{minHeight: "24px", borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "11px"}}>{(useProfile.profession != null && useProfile.profession.trim() != "") ? useProfile.profession : " "}</p>}
-                {useEditing == true && <input onChange={(e) => {setProfile({ ...useProfile, profession: e.target.value })} } style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "11px", resize:"none"}} defaultValue={(useProfile.profession != null) ? useProfile.profession : " "}/>}
+                {useEditing == true && <input name="profession" onChange={(e) => {setProfile({ ...useProfile, profession: e.target.value })} } style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "11px", resize:"none"}} defaultValue={(useProfile.profession != null) ? useProfile.profession : " "}/>}
                 </div>
 
                 <div>
                     {useSkills.length == 0 && <div>
                     <p style={{color: "#4d5055", fontSize: "12px"}}>SKILLS</p>
                     {useEditing == false && <p style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "11px", minHeight: "24px"}}>{(useProfile.skills != null) ? useProfile.skills : " "}</p>}
-                    {useEditing == true && <input onChange={(e) => {setProfile({ ...useProfile, profession: e.target.value })} } style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "11px", resize:"none"}} defaultValue={(useProfile.skills!= null) ? useProfile.skills : " "}/>}
+                    {useEditing == true && <input name="skills" onChange={(e) => {setProfile({ ...useProfile, profession: e.target.value })} } style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "11px", resize:"none"}} defaultValue={(useProfile.skills!= null) ? useProfile.skills : " "}/>}
                     </div> }
 
-                    {useSkills.length > 0 && <Skills props={useSkills} skills={useSkills} setSkills={setSkills}/>}
+                    {useSkills.length > 0 && <Skills props={useSkills} skillsArray={useSkills} setSkillsArray={setSkills}/>}
                 </div>
 
 
@@ -204,40 +309,44 @@ export default function InfoComponent(profile: InfoProp){
     
 }
 
-function Skills({skills, setSkills }: SkillProp){
+function Skills({skillsArray, setSkillsArray }: SkillProp){
 
     const editing = useContext(UserContext);
+    const skills = skillsArray ;
+
+    const displayedSkills = editing ? skills : skills.filter(skill => skill.trim() !== "");
 
     const updateSkill = (index: number, newValue: string) => {
-        setSkills((prev) => {
+        setSkillsArray((prev) => {
             const updated = [...prev]
             updated[index] = newValue
             return updated
         })
     }
 
+    const onClick = ()=>{
+        setSkillsArray((prev) => [...prev, ""]);
+    }
+
     return(
     <div style={{marginBottom: editing? "24px" : ""}}>
-        {skills.map((skill, index)=> 
-            <div className="flex items-start gap-4" key={index}>
+        {displayedSkills.map((skill, index)=> 
+            index % 3 == 0 && <div className="flex items-start gap-4" key={index}>
 
                 {editing == false && <>
                 <div>
                     {index == 0 && <p style={{color: "#4d5055", fontSize: "12px"}}>SKILLS</p>}
-                    {index == 0 && editing == false && <p style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "9px", width:"125px", marginBottom:"12px"}}>{skill}</p>}
-                    {index >= 2 &&  editing == false && <p style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "9px", width:"125px", marginBottom:"12px"}}>{skills[index+1]}</p>}
+                    {displayedSkills[index] !== undefined && <p style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "9px", width:"125px", marginBottom:"12px"}}>{displayedSkills[index]}</p>}
                 </div>
 
                 <div>
                     {index+1 == 1 && <p style={{color: "#4d5055", fontSize: "12px", visibility: "hidden"}}>S</p>}
-                    {(index+1) != skills.length && (index+1) == 1 && editing == false && <p style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width: "125px", marginBottom: "12px"}}>{skills[index+1]}</p>}
-                    {(index+1) != skills.length && (index+1) > 1 && editing == false && <p style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width: "125px", marginBottom: "12px"}}>{skills[index+2]}</p>}
+                    {displayedSkills[index + 1] !== undefined && editing == false && <p style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width: "125px", marginBottom: "12px"}}>{displayedSkills[index+1]}</p>}
                 </div>
 
                 <div>
                     {index+2 == 2 && <p style={{color: "#4d5055", fontSize: "12px", visibility: "hidden"}}>S</p>}
-                    {(index+2) != skills.length && (index+2) == 2 && editing == false && <p style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width: "125px", marginBottom: "12px"}}>{skills[index+2]}</p>}
-                    {(index+2) != skills.length && (index+2) > 2 && editing == false && <p style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width: "125px", marginBottom: "12px"}}>{skills[index+3]}</p>}
+                    {displayedSkills[index + 2] !== undefined  && editing == false && <p style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width: "125px", marginBottom: "12px"}}>{displayedSkills[index+2]}</p>}
                 </div>
 
                 </>
@@ -246,32 +355,34 @@ function Skills({skills, setSkills }: SkillProp){
                 {editing == true && <>
                 <div>
                     {index == 0 && <p style={{color: "#4d5055", fontSize: "12px"}}>SKILLS</p>}
-                    {index == 0 && editing == true && <input onChange={(e) => updateSkill(index, e.target.value)} style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "9px", width:"125px", marginBottom:"12px"}} defaultValue= {skill}></input>}
-                    {index >= 2 && editing == true && skills[index+1] && <input onChange={(e) => updateSkill(index+1, e.target.value)} style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "9px", width:"125px", marginBottom:"12px"}} defaultValue= {skills[index+1]}></input>}
+                    {displayedSkills[index] !== undefined && <input onChange={(e) => updateSkill(index, e.target.value)} style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "9px", width:"125px", marginBottom:"12px"}} value= {displayedSkills[index]}></input>}
+                
                 </div>
 
                 <div>
                     {index+1 == 1 && <p style={{color: "#4d5055", fontSize: "12px", visibility: "hidden"}}>S</p>}
-                    {(index+1) != skills.length && (index+1) == 1 && skills[index+1] && editing == true && <input onChange={(e) => updateSkill(index+1, e.target.value)} style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width: "125px", marginBottom: "12px"}} defaultValue= {skills[index+1]}></input>}
-                    {(index+1) != skills.length && (index+1) > 1 && skills[index+2] && editing == true && <input onChange={(e) => updateSkill(index+2, e.target.value)} style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width: "125px", marginBottom: "12px"}} defaultValue= {skills[index+2]}></input>}
+                    {displayedSkills[index+1] !== undefined && displayedSkills[index+1] != undefined && <input onChange={(e) => updateSkill(index+1, e.target.value)} style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width: "125px", marginBottom: "12px"}} value= {displayedSkills[index+1]}></input>}                
                 </div>
 
                 <div>
                     {index+2 == 2 && <p style={{color: "#4d5055", fontSize: "12px", visibility: "hidden"}}>S</p>}
-                    {(index+2) != skills.length && (index+2) == 2 && skills[index+2] && editing == true && <input onChange={(e) => updateSkill(index+2, e.target.value)} style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width: "125px", marginBottom: "12px"}} defaultValue= {skills[index+2]}></input>}
-                    {(index+2) != skills.length && (index+2) > 2 && skills[index+3] && editing == true && <input onChange={(e) => updateSkill(index+3, e.target.value)} style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width: "125px", marginBottom: "12px"}} defaultValue= {skills[index+3]}></input>}
+                    {displayedSkills[index+2] != undefined && <input onChange={(e) => updateSkill(index+2, e.target.value)} style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width: "125px", marginBottom: "12px"}} value= {displayedSkills[index+2]}></input>}
+                    
                 </div>
                 
+                {editing && index + 3 >= displayedSkills.length && <div>
+                {displayedSkills.length <=3  && <p style={{color: "#4d5055", fontSize: "12px", visibility: "hidden"}}>S</p>}
+                <button type="button" onClick={onClick} style={{ textDecoration: "none", border: "1px solid #007BFF", paddingLeft: "8px", fontSize: "15px", color: "#4d5055", borderRadius: "4px", paddingRight: "7px"}}>Add Skill</button>
+                </div>
+                }
+
                 </>
                 }
 
-                {index == skills.length-1 || index+1 == skills.length-1 && editing == true && <div>
-                <p style={{color: "#4d5055", fontSize: "12px", visibility: "hidden"}}>S</p>
-                <button style={{ textDecoration: "none", border: "1px solid #007BFF", paddingLeft: "8px", fontSize: "15px", color: "#4d5055", borderRadius: "4px", paddingRight: "7px"}}>Add Skill</button>
-                </div>}
-
             </div>
     )}
+    
+
     </div>
     )
 }

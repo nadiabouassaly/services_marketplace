@@ -10,6 +10,7 @@ export type Profile = {
     email : string
     services?: UserService[]
     phoneNumber: string
+    profilePicture?: string
 }
 
 export type UserService = {
