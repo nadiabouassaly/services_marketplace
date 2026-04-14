@@ -64,6 +64,7 @@ export default async function HomePage({searchParams}: {searchParams: Promise<{ 
         </div>
       </div>
     </div>
+    <AuthModal />
     </Suspense>
   );
 }
