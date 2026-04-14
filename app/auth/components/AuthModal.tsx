@@ -28,18 +28,29 @@ export default function AuthModal() {
           setShowModal(false);
         }
       } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+  });
+console.log("SIGNUP DATA:", data);
+  if (error) {
+    alert(error.message);
+  } else {
+    if (data?.user) {
+      const { error: insertError } = await supabase.from("profiles").insert([
+  {
+    id: data.user.id,
+    email: data.user.email,
+    name: "New User",
+  },
+]);
 
-        if (error) {
-          alert(error.message);
-        } else {
-          alert("Account created successfully!");
-          setShowModal(false);
-        }
-      }
+console.log("INSERT ERROR:", insertError);
+    }
+    alert("Account created successfully!");
+    setShowModal(false);
+  }
+}
     } catch (error) {
       console.error(error);
       alert("Something went wrong.");
