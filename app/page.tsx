@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import AuthModal from "./auth/components/AuthModal";
 import Hero from '../components/Hero';
 import Sidebar from '../components/Sidebar';
 import Card from '../components/Card';
