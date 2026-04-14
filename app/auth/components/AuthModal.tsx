@@ -37,15 +37,24 @@ console.log("SIGNUP DATA:", data);
     alert(error.message);
   } else {
     if (data?.user) {
-      const { error: insertError } = await supabase.from("profiles").insert([
+      const { error: insertError } = await supabase.from("userprofile").insert([
   {
-    id: data.user.id,
+    userprofile_id: data.user.id,
     email: data.user.email,
-    name: "New User",
+    firstname: "New",
+    lastname: "User",
+    middlename: null,
+    profession: null,
+    phoneNumber: null,
+    dateofbirth: "2000-01-01",
   },
 ]);
 
-console.log("INSERT ERROR:", insertError);
+console.log("INSERT ERROR FULL:", insertError);
+console.log("INSERT ERROR MESSAGE:", insertError?.message);
+console.log("INSERT ERROR DETAILS:", insertError?.details);
+console.log("INSERT ERROR HINT:", insertError?.hint);
+console.log("INSERT ERROR CODE:", insertError?.code);
     }
     alert("Account created successfully!");
     setShowModal(false);
