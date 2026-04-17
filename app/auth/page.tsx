@@ -1,12 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { supabase } from "./lib/supabase";
 
 export default function HomePage() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstname, setFirstname] = useState("");
+  const [middlename, setMiddlename] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [profession, setProfession] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [dateofbirth, setDateofbirth] = useState("");
+  const [skills, setSkills] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleAuth = async (e: React.FormEvent) => {
@@ -26,7 +33,7 @@ export default function HomePage() {
           alert("Logged in successfully!");
         }
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
         });
@@ -34,7 +41,32 @@ export default function HomePage() {
         if (error) {
           alert(error.message);
         } else {
-          alert("Account created successfully! Check your email if confirmation is enabled.");
+          if (data?.user) {
+            const profileData = {
+              userprofile_id: data.user.id,
+              email: data.user.email,
+              firstname: firstname.trim(),
+              middlename: middlename.trim() || null,
+              lastname: lastname.trim(),
+              profession: profession.trim() || null,
+              phoneNumber: phoneNumber.trim(),
+              dateofbirth: dateofbirth,
+              skills: skills
+                .split(",")
+                .map((skill) => skill.trim())
+                .filter(Boolean),
+            };
+
+            const { error: insertError } = await supabase.from("userprofile").insert([profileData]);
+            if (insertError) {
+              console.error("Profile insert failed:", insertError);
+              alert("Account created, but saving profile failed. Please try again.");
+            } else {
+              alert("Account and profile created successfully!");
+            }
+          } else {
+            alert("Account created successfully! Check your email if confirmation is enabled.");
+          }
         }
       }
     } catch (error) {
@@ -76,8 +108,86 @@ export default function HomePage() {
               className="w-full border rounded-lg px-3 py-2"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              minLength={6}
               required
             />
+
+            {!isLogin && (
+              <>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <input
+                    type="text"
+                    placeholder="First Name"
+                    className="w-full border rounded-lg px-3 py-2"
+                    value={firstname}
+                    onChange={(e) => setFirstname(e.target.value)}
+                    pattern="[A-Za-z\s]+"
+                    title="Letters and spaces only"
+                    required
+                  />
+                  <input
+                    type="text"
+                    placeholder="Last Name"
+                    className="w-full border rounded-lg px-3 py-2"
+                    value={lastname}
+                    onChange={(e) => setLastname(e.target.value)}
+                    pattern="[A-Za-z\s]+"
+                    title="Letters and spaces only"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <input
+                    type="text"
+                    placeholder="Middle Name (optional)"
+                    className="w-full border rounded-lg px-3 py-2"
+                    value={middlename}
+                    onChange={(e) => setMiddlename(e.target.value)}
+                    pattern="[A-Za-z\s]*"
+                    title="Letters and spaces only"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Profession"
+                    className="w-full border rounded-lg px-3 py-2"
+                    value={profession}
+                    onChange={(e) => setProfession(e.target.value)}
+                    pattern="[A-Za-z\s]*"
+                    title="Letters and spaces only"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <input
+                    type="tel"
+                    placeholder="Phone number"
+                    className="w-full border rounded-lg px-3 py-2"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    pattern="\d{7,15}"
+                    title="Digits only, 7 to 15 characters"
+                    required
+                  />
+                  <input
+                    type="date"
+                    className="w-full border rounded-lg px-3 py-2"
+                    value={dateofbirth}
+                    onChange={(e) => setDateofbirth(e.target.value)}
+                    max={new Date().toISOString().split("T")[0]}
+                    required
+                  />
+                </div>
+
+                <input
+                  type="text"
+                  placeholder="Skills (comma separated)"
+                  className="w-full border rounded-lg px-3 py-2"
+                  value={skills}
+                  onChange={(e) => setSkills(e.target.value)}
+                />
+              </>
+            )}
 
             <button
               type="submit"
