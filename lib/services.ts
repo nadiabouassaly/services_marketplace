@@ -1,6 +1,5 @@
 import {UserService, Profile} from '@/types/userService'
 import {supabase} from '@/lib/db'
-import { UUID } from 'crypto';
 
 export async function getServices(){
     const {data} = await supabase.from('services').select('*')
@@ -57,9 +56,14 @@ export async function createService(service: Omit<UserService, 'services_id' | '
     return created as UserService;
 }
 
-export async function getServicesById(id: UUID){
+export async function getServicesById(id: string){
     const {data} = await supabase.from('services').select('*').eq('services_id', id).single();
     return data as UserService;
+}
+
+export async function getServicesByUserId(userId: string){
+    const {data} = await supabase.from('services').select('*').eq('userprofile_id', userId);
+    return data as UserService[];
 }
 
 
@@ -73,7 +77,7 @@ export function timeAgo(date: string): string {
   return (Math.floor(seconds / 2592000) === 1 ? `${Math.floor(seconds / 2592000)} month ago` : `${Math.floor(seconds / 2592000)} months ago`);
 }
 
-export async function getProfileByID(id: UUID){
+export async function getProfileByID(id: string){
     const {data} = await supabase.from('userprofile').select('*').eq('userprofile_id', id).single() ;
     return data as Profile ;
 }

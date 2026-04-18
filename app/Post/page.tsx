@@ -2,6 +2,7 @@
 
 import { FormEvent, Suspense, useState } from "react";
 import { createService } from "@/lib/services";
+import { supabase } from "@/lib/db";
 
 const categories = [
   "Tutoring",
@@ -44,6 +45,14 @@ export default function Post() {
     setIsSubmitting(true);
 
     try {
+      const { data } = await supabase.auth.getUser();
+      const userId = data.user?.id;
+
+      if (!userId) {
+        setStatus("You must be logged in to create a service.");
+        return;
+      }
+
       await createService({
         name: name.trim(),
         description: description.trim(),
@@ -57,7 +66,8 @@ export default function Post() {
           | "Pet Care"
           | "Transportation"
           | "Other",
-          availability: ""
+        availability: "",
+        userprofile_id: userId
       });
       setStatus("Service created successfully!");
       setName("");
