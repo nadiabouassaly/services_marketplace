@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import {createRequest} from "@/lib/requestsAPI";
 import {UserService, Profile} from '@/types/userService' 
 
-export default function RequestServiceModal({ service, currentUser, onClose }) {
+export default function RequestServiceModal({ service, currentUser, onClose }: { service: any; currentUser: { id: string | null }; onClose: () => void }) {
   const [modalNum, setModalNum] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({
@@ -15,7 +15,7 @@ export default function RequestServiceModal({ service, currentUser, onClose }) {
   duration_requested: "",
 });
   const providerName = service?.profile?.name;
-  const update = (field, value) => setForm((f) => ({ ...f, [field]: value }));
+const update = (field: string, value: string) => setForm((f) => ({ ...f, [field]: value }));
   const router = useRouter();
 
   const handleSubmit = async () => {

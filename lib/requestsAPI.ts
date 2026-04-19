@@ -7,7 +7,7 @@ export async function createRequest({
   form,
 }: {
   service: any;
-  currentUser: { id: string };
+  currentUser: { id: string | null }
   form: Pick<request, "message" | "budget" | "duration_requested">;
 }) {
   const { error } = await supabase.from("requests").insert({
