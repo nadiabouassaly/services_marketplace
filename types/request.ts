@@ -6,4 +6,5 @@ export type request = {
     message : string;
     budget : string;
     duration_requested: string;
+    communication_method : string;
 }

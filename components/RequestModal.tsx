@@ -14,6 +14,7 @@ export default function RequestServiceModal({ service, currentUser, onClose }: {
   message: "",
   budget: "",
   duration_requested: "",
+  communication_method : "",
 });
   const providerName = service?.profile?.name;
 const update = (field: string, value: string) => setForm((f) => ({ ...f, [field]: value }));
@@ -79,7 +80,19 @@ const handleSubmit = async () => {
             placeholder="e.g. 1 week, 1 month..."></textarea>
         </div>
         </div>
-
+        
+          <div>
+            <h2 className= "mt-4 text-sm font-semibold">Select your preferred communication method</h2>
+          <select
+        value={form.communication_method}
+        onChange={(e) => update("communication_method", e.target.value)}
+        className="mt-1 border border-gray-300 rounded-md p-2 text-sm"
+      >
+        <option value="">Select...</option>
+        <option value="WhatsApp">WhatsApp</option>
+        <option value="Email">Email</option>
+      </select>
+          </div>
         <div className="flex gap-3 mt-2">
           <button
             className="flex-1 px-4 py-2 rounded-md border border-[#0a74ff] text-[#0a74ff] bg-white hover:bg-blue-50 transition-colors duration-300 ease-in-out"

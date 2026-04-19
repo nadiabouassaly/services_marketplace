@@ -8,7 +8,7 @@ export async function createRequest({
 }: {
   service: any;
   currentUser: { id: string | null }
-  form: Pick<request, "message" | "budget" | "duration_requested">;
+  form: Pick<request, "message" | "budget" | "duration_requested" | "communication_method">;
 }) {
   const { error } = await supabase.from("requests").insert({
     service_id: service.services_id,
@@ -17,6 +17,7 @@ export async function createRequest({
     message: form.message,
     budget: form.budget || null,
     duration_requested: form.duration_requested || null,
+    communication_method : form.communication_method,
   });
 
   return { error };
