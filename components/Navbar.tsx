@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
+import { FaBell, FaRegBell } from "react-icons/fa";
 
 export default function Navbar() {
   const router = useRouter();
@@ -25,6 +26,11 @@ export default function Navbar() {
         <div className="flex items-center space-x-4">
           {(pathName != "/Profile") && <ProfileIcon id={""}/>}
           {(pathName == "/" || pathName == "/Profile") && <NavbarButton onClick={()=>router.push("/Post")}>+ Post a Service</NavbarButton>}
+          <button>
+            <FaBell className="text-2xl text-blue-500 cursor-pointer" />
+            
+          </button>
+          
         </div>
       </div>
     </nav>

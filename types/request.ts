@@ -7,4 +7,5 @@ export type request = {
     budget : string;
     duration_requested: string;
     communication_method : string;
+    status: "pending" | "accepted" | "rejected" | "completed";
 }
