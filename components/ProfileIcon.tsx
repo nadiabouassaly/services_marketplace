@@ -17,13 +17,18 @@ function ProfileIconInner({ id }: User) {
 
   useEffect(() => {
     const fetchPicture = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      let targetId = id;
+
+      if (!targetId) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        targetId = user.id;
+      }
 
       const { data, error } = await supabase
         .from("userprofile")
         .select("profilePicture")
-        .eq("userprofile_id", user.id)
+        .eq("userprofile_id", targetId)
         .single();
 
       if (!error && data?.profilePicture) {
@@ -32,7 +37,7 @@ function ProfileIconInner({ id }: User) {
     };
 
     fetchPicture();
-  }, []);
+  }, [id]);
 
   const userId = id;
   params.set("id", userId);

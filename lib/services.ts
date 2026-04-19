@@ -66,7 +66,10 @@ export async function getServicesById(id: string){
 }
 
 export async function getServicesByUserId(userId: string){
-    const {data} = await supabase.from('services').select('*').eq('userprofile_id', userId);
+    const {data} = await supabase
+        .from('services')
+        .select('*, images(file_path, is_primary)')
+        .eq('userprofile_id', userId);
     return data as UserService[];
 }
 

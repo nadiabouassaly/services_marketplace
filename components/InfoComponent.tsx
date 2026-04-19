@@ -422,19 +422,26 @@ export default function InfoComponent(profile: InfoProp){
         </div>
         </form>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-[900px] ml-4 mt-3">
-            {services.map((card) => (
-            <Card
-                key={card.services_id}
-                id={card.services_id.toString()}
-                name={card.name}
-                price={card.price}
-                description={card.description}
-                category={card.category}
-                editing={useEditing}
-            />
-            ))}
-        </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-[900px] ml-4 mt-3">
+            {services.map((card) => {
+                const primaryImage = card.images?.find((img: any) => img.is_primary)?.file_path
+                ?? card.images?.[0]?.file_path
+                ?? null;
+
+                return (
+                <Card
+                    key={card.services_id}
+                    id={card.services_id.toString()}
+                    name={card.name}
+                    price={card.price}
+                    description={card.description}
+                    category={card.category}
+                    editing={useEditing}
+                    image={primaryImage}
+                />
+                );
+            })}
+            </div>
 
         </>
         </UserContext.Provider>
