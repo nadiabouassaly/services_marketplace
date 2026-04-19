@@ -257,7 +257,7 @@ export default function InfoComponent(profile: InfoProp){
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
 
             <h1 className = "text-4xl font-bold mb-4.5" style={{color: "#1460b1"}}>{profile.logedInUser? "My Profile": "Profile"}</h1> 
-            <button type="button"  style={{marginRight:"40px", marginBottom:"1px", color:"red", fontSize:"16.5px"}} onClick={()=>signOut()}>Sign out</button>
+            {profile.logedInUser && <button type="button"  style={{marginRight:"40px", marginBottom:"1px", color:"red", fontSize:"16.5px"}} onClick={()=>signOut()}>Sign out</button>}
             </div>
 
 
