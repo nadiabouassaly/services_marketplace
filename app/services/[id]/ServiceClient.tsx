@@ -11,6 +11,7 @@ import ProfileIcon from "@/components/ProfileIcon" ;
 import { useProfileData } from "@/components/useProfileData";
 import AuthGate from "@/app/auth/components/AuthGate";
 import { supabase } from "@/app/auth/lib/supabase";
+import RequestModal from "@/components/RequestModal";
 
 const categoryIcons: Record<string, React.ReactNode> = {
   'Tutoring': <FaBook />,
@@ -23,7 +24,8 @@ const categoryIcons: Record<string, React.ReactNode> = {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function ServiceClient({ service, images }: { service: any; images: any }) {
-  const [showModal, setShowModal] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [showRequestModal, setShowRequestModal] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [average, setAverage] = useState(0);
   const [count, setCount] = useState(0);
@@ -98,11 +100,13 @@ export default function ServiceClient({ service, images }: { service: any; image
 
           <div className="flex gap-3 mt-6">
             <button
-              onClick={() => setShowModal(true)}
+              onClick={() => setShowReviewModal(true)}
               className="flex-1 px-4 py-2 rounded-md border border-[#0a74ff] text-[#0a74ff] bg-white hover:bg-blue-50 transition-colors duration-300 ease-in-out">
               Review
             </button>
-            <button className="flex-1 px-4 py-2 rounded-md bg-[#0a74ff] text-white hover:bg-[#1166f0] transition-colors duration-300 ease-in-out">
+            <button 
+              onClick={() => setShowRequestModal(true)}
+              className="flex-1 px-4 py-2 rounded-md bg-[#0a74ff] text-white hover:bg-[#1166f0] transition-colors duration-300 ease-in-out">
               Request Service
             </button>
           </div>
@@ -150,13 +154,22 @@ export default function ServiceClient({ service, images }: { service: any; image
         </div>
       </div>
       
-      {showModal && signedIn == false && <AuthGate closeOption={true}/>}
+      {showReviewModal && signedIn == false && <AuthGate closeOption={true}/>}
       
-      {showModal && signedIn && (
+      {showReviewModal && signedIn && (
         <ReviewModal
           serviceId={service.services_id}
           userId={profile?.userprofile_id ?? null}
-          onClose={() => setShowModal(false)}
+          onClose={() => setShowReviewModal(false)}
+        />
+      )}
+
+      {showRequestModal && signedIn == false && <AuthGate closeOption={true}/>}
+      {showRequestModal && signedIn && (
+        <RequestModal
+          service = {service}
+          currentUser={{ id: userId }}
+          onClose={() => setShowRequestModal(false)}
         />
       )}
 
