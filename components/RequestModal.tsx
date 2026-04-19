@@ -4,7 +4,8 @@ import { useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import {createRequest} from "@/lib/requestsAPI";
-import {UserService, Profile} from '@/types/userService' 
+import {UserService, Profile} from '@/types/userService'
+import {supabase} from "@/lib/db"; 
 
 export default function RequestServiceModal({ service, currentUser, onClose }: { service: any; currentUser: { id: string | null }; onClose: () => void }) {
   const [modalNum, setModalNum] = useState(1);
@@ -18,10 +19,18 @@ export default function RequestServiceModal({ service, currentUser, onClose }: {
 const update = (field: string, value: string) => setForm((f) => ({ ...f, [field]: value }));
   const router = useRouter();
 
-  const handleSubmit = async () => {
-  const { error } = await createRequest({ service, currentUser, form });
+const handleSubmit = async () => {
+  const { data } = await supabase.auth.getUser();
+  const userId = data.user?.id;
+
+  if (!userId) {
+    alert("You need to be logged in to request a service.");
+    return;
+  }
+
+  const { error } = await createRequest({ service, currentUser: { id: userId }, form });
   if (error) {
-    alert(JSON.stringify(error));  
+    alert(JSON.stringify(error));
   } else {
     setModalNum(2);
   }

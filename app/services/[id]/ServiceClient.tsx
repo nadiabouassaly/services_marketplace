@@ -164,8 +164,8 @@ export default function ServiceClient({ service, images }: { service: any; image
         />
       )}
 
-      {showRequestModal && signedIn == false && <AuthGate closeOption={true}/>}
-      {showRequestModal && signedIn && (
+      
+      {showRequestModal && (
         <RequestModal
           service = {service}
           currentUser={{ id: userId }}
