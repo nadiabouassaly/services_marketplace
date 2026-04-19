@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/db"; 
 import { timeAgo } from "@/lib/services";
 import styles from "./page.module.css";
 import ImageCarousel from "@/components/ImageCarousel";
@@ -9,6 +8,8 @@ import { getReviewsForService } from "@/lib/reviewsApi";
 import { Review } from "@/types/review";
 import {FaLocationArrow, FaBook, FaUser, FaBroom, FaDog, FaBaby, FaCar, FaBusinessTime } from 'react-icons/fa';
 import ProfileIcon from "@/components/ProfileIcon" ;
+import { useProfileData } from "@/components/useProfileData";
+import AuthGate from "@/app/auth/components/AuthGate";
 
 
 const categoryIcons: Record<string, React.ReactNode> = {
@@ -28,12 +29,8 @@ export default function ServiceClient({ service, images }: { service: any; image
   const [count, setCount] = useState(0);
   const [reviews, setReviews] = useState<Review[]>([]);
 
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }: { data: { user: { id: string } | null } }) => {
-      setUserId(data.user?.id ?? null);
-    });
-  }, []);
-
+  const {profile, signedIn} = useProfileData("") ;
+  
   useEffect(() => {
     async function fetchReviews() {
       try {
@@ -148,11 +145,13 @@ export default function ServiceClient({ service, images }: { service: any; image
           </div>
         </div>
       </div>
-
-      {showModal && (
+      
+      {showModal && signedIn == false && <AuthGate />}
+      
+      {showModal && signedIn && (
         <ReviewModal
           serviceId={service.services_id}
-          userId={null}
+          userId={profile?.userprofile_id ?? null}
           onClose={() => setShowModal(false)}
         />
       )}

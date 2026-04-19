@@ -151,7 +151,6 @@ export default function InfoComponent(profile: InfoProp){
     }, "You must be at least 14 years old."),
     });
 
-    
     const onSave=(e: React.FormEvent<HTMLFormElement>)=>{
 
         e.preventDefault();
@@ -217,7 +216,6 @@ export default function InfoComponent(profile: InfoProp){
     if (!file) return
     console.log(file) // do whatever you need with the file
     }
-
 
     return(
             <UserContext.Provider value={useEditing}>

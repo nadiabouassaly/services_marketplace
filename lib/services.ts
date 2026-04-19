@@ -6,6 +6,7 @@ export async function getServices() {
     .from('services')
     .select('*, images(file_path, is_primary)');
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return data as any[];
 }
 
@@ -43,7 +44,7 @@ export async function getServiceByCategory(categories : string[], currentPage: n
     };
 }
 
-export async function createService(service: Omit<UserService, 'services_id' | 'created_at' | 'provider' | 'userprofile_id'>) {
+export async function createService(service: Omit<UserService, 'services_id' | 'created_at' | 'provider'>) {
     const response = await fetch('/api/services', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

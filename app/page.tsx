@@ -9,6 +9,7 @@ import {getServiceByCategory} from '@/lib/services'
 import Pagination from '../components/Pagination' ;
 import { Suspense} from 'react';
 import React from 'react';
+import AuthGate from "./auth/components/AuthGate";
 
 export default async function HomePage({searchParams}: {searchParams: Promise<{ filters?: string; page?: string; maxPrice?: string, search?: string }>}) {
   
@@ -67,7 +68,7 @@ export default async function HomePage({searchParams}: {searchParams: Promise<{ 
         </div>
       </div>
     </div>
-    <AuthModal />
+    <AuthGate />
     </Suspense>
   );
 }

@@ -4,6 +4,8 @@ import { FormEvent, Suspense, useState } from "react";
 import { createService } from "@/lib/services";
 import { supabase } from "@/lib/db";
 import { uploadImages, addImages } from "@/lib/images";
+import { useProfileData } from "@/components/useProfileData";
+import AuthGate from "../auth/components/AuthGate";
 
 const categories = [
   "Tutoring",
@@ -24,6 +26,8 @@ export default function Post() {
   const [status, setStatus] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [images, setImages] = useState<FileList | null>(null);
+  
+  const {profile, signedIn} = useProfileData("") ;
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -53,14 +57,15 @@ export default function Post() {
 
       console.log("before createService");
 
-
       const service = await createService({
         name: name.trim(),
         description: description.trim(),
         price: parsedPrice,
         location: location.trim(),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         category: category as any,
         availability: "",
+        userprofile_id: profile?.userprofile_id
       });
 
       console.log("after createService");
@@ -87,6 +92,7 @@ export default function Post() {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
+    {signedIn == false && <AuthGate />}
     <main className="max-w-3xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 md:p-8">
         <h1 className="text-2xl font-bold text-slate-900 mb-4">Create Service</h1>
