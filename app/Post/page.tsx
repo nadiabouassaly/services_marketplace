@@ -92,7 +92,7 @@ export default function Post() {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-    {signedIn == false && <AuthGate />}
+    {signedIn == false && <AuthGate closeOption={false}/>}
     {signedIn && <main className="max-w-3xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 md:p-8">
         <h1 className="text-2xl font-bold text-slate-900 mb-4">Create Service</h1>

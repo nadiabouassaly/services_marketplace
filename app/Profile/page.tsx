@@ -26,7 +26,7 @@ function ProfilePage() {
   }
   
   if (signedIn === false) {
-    return <AuthGate />;
+    return <AuthGate closeOption={false}/>;
   }
 
   if (!profile) {

@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/db";
-import AuthModal from "./AuthModal";
+import AuthModal, { AuthProp } from "./AuthModal";
 
-export default function AuthGate() {
+export default function AuthGate({closeOption}: AuthProp) {
   const [show, setShow] = useState(false);
   const [checked, setChecked] = useState(false);
 
@@ -24,5 +24,5 @@ export default function AuthGate() {
 
   if (!checked) return null;
 
-  return <>{show && <AuthModal />}</>;
+  return <>{show && <AuthModal closeOption={closeOption}/>}</>;
 }

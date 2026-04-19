@@ -2,8 +2,13 @@
 
 import React, { useState } from "react";
 import { supabase } from "@/app/auth/lib/supabase";
+import { useRouter } from "next/navigation";
 
-export default function AuthModal() {
+export type AuthProp={
+  closeOption: boolean
+}
+
+export default function AuthModal({closeOption}: AuthProp) {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,7 +21,8 @@ export default function AuthModal() {
   const [skills, setSkills] = useState("");
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(true);
-
+  const router = useRouter(); 
+  
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -87,12 +93,19 @@ export default function AuthModal() {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white w-full max-w-md rounded-2xl shadow-xl p-6 relative">
-        <button
+        {closeOption == true && <button
           onClick={() => setShowModal(false)}
           className="absolute top-3 right-3 text-gray-500 hover:text-black"
         >
           ✕
-        </button>
+        </button>}
+
+        {closeOption == false && <button
+          onClick={() =>router.push('/')}
+          className="absolute top-3 right-3 text-gray-500 hover:text-black"
+        >
+          ✕
+        </button>}
 
         <h2 className="text-2xl font-bold text-center mb-6">
           {isLogin ? "Login" : "Sign Up"}

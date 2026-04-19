@@ -68,7 +68,7 @@ export default async function HomePage({searchParams}: {searchParams: Promise<{ 
         </div>
       </div>
     </div>
-    <AuthGate />
+    <AuthGate closeOption={true}/>
     </Suspense>
   );
 }

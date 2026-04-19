@@ -11,7 +11,6 @@ import ProfileIcon from "@/components/ProfileIcon" ;
 import { useProfileData } from "@/components/useProfileData";
 import AuthGate from "@/app/auth/components/AuthGate";
 
-
 const categoryIcons: Record<string, React.ReactNode> = {
   'Tutoring': <FaBook />,
   'Elderly Care': <FaUser />,
@@ -146,7 +145,7 @@ export default function ServiceClient({ service, images }: { service: any; image
         </div>
       </div>
       
-      {showModal && signedIn == false && <AuthGate />}
+      {showModal && signedIn == false && <AuthGate closeOption={true}/>}
       
       {showModal && signedIn && (
         <ReviewModal
