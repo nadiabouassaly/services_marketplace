@@ -10,8 +10,9 @@ type CardProps = {
   id : string;
   description: string;
   price: number;
-  category: string; // category prop
+  category: string;
   editing: boolean 
+  image?: string | null; 
 };
 
 
@@ -25,7 +26,7 @@ const categoryIcons: Record<string, React.ReactNode> = {
   'transportation': <FaCar />,
 };
 
-export default function Card({ id, name, description, price, category, editing }: CardProps) {
+export default function Card({ id, name, description, price, category, editing, image }: CardProps) {
   const icon = categoryIcons[category?.toLowerCase()];
   const router = useRouter();
 
@@ -74,8 +75,18 @@ export default function Card({ id, name, description, price, category, editing }
     <div onClick={onClick} className="bg-white rounded-lg shadow-sm border border-gray-300 hover:shadow-md transition-shadow flex flex-col overflow-hidden flex-1">
       {/* Top banner */}
       <div className="w-full h-32 bg-blue-100 flex items-center justify-center">
-        <div className="w-full h-32 bg-blue-100 flex items-center justify-center text-blue-600 text-4xl opacity-40">
-          {icon}
+        <div className="w-full h-32 bg-blue-100 flex items-center justify-center overflow-hidden">
+          {image ? (
+            <img
+              src={image}
+              alt={name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="text-blue-600 text-4xl opacity-40">
+              {icon}
+            </div>
+          )}
         </div>
       </div>
 

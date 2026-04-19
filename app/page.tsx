@@ -22,7 +22,7 @@ export default async function HomePage({searchParams}: {searchParams: Promise<{ 
 
   const { services, totalPages } = await getServiceByCategory(filters, page, priceParam, search);
 
-  const numOfPages = Math.ceil(totalPages / 12);
+  const numOfPages = Math.ceil(totalPages / 18);
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -48,14 +48,16 @@ export default async function HomePage({searchParams}: {searchParams: Promise<{ 
         
             {totalPages >= 1 && <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
               {services.map((card) => (
-                <Card key={card.services_id}
-                       id={card.services_id.toString()} 
-                      name = {card.name}
-                      price = {card.price}
-                      description={card.description}
-                      category={card.category}
-                      editing = {false}
-                      />
+                <Card
+                  key={card.services_id}
+                  id={card.services_id.toString()}
+                  name={card.name}
+                  price={card.price}
+                  description={card.description}
+                  category={card.category}
+                  editing={false}
+                  image={card.images?.[0]?.file_path}
+                />
                 ))}            
             </div>}
             <Pagination props = {numOfPages} />

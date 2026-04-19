@@ -3,6 +3,7 @@
 import { FormEvent, Suspense, useState } from "react";
 import { createService } from "@/lib/services";
 import { supabase } from "@/lib/db";
+import { uploadImages, addImages } from "@/lib/images";
 
 const categories = [
   "Tutoring",
@@ -22,6 +23,7 @@ export default function Post() {
   const [category, setCategory] = useState("");
   const [status, setStatus] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [images, setImages] = useState<FileList | null>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -38,10 +40,6 @@ export default function Post() {
       return;
     }
 
-    /*test*/ 
-    /*test1*/ 
-    /*test2*/ 
-
     setIsSubmitting(true);
 
     try {
@@ -53,21 +51,26 @@ export default function Post() {
         return;
       }
 
-      await createService({
+      console.log("before createService");
+
+
+      const service = await createService({
         name: name.trim(),
         description: description.trim(),
         price: parsedPrice,
         location: location.trim(),
-        category: category as
-          | "Tutoring"
-          | "Babysitting"
-          | "Elderly Care"
-          | "Home Maintenance"
-          | "Pet Care"
-          | "Transportation"
-          | "Other",
+        category: category as any,
         availability: "",
       });
+
+      console.log("after createService");
+
+
+      if (images && service?.services_id && userId) {
+        const urls = await uploadImages(images);
+        await addImages(service.services_id, urls, userId);
+      }
+
       setStatus("Service created successfully!");
       setName("");
       setDescription("");
@@ -97,6 +100,17 @@ export default function Post() {
               onChange={(e) => setName(e.target.value)}
               required
               className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:ring focus:ring-blue-200 outline-none"
+            />
+          </label>
+
+          <label className="space-y-1 text-sm text-slate-700">
+            <span className="font-medium">Images</span>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={(e) => setImages(e.target.files)}
+              className="w-full rounded-lg border border-gray-300 p-3"
             />
           </label>
 
