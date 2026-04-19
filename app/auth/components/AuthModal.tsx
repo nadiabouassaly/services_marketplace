@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { supabase } from "@/app/auth/lib/supabase";
 import { useRouter } from "next/navigation";
 
+//prop
 export type AuthProp={
   closeOption: boolean
 }
