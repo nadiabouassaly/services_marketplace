@@ -35,7 +35,7 @@ function ProfilePage() {
 
   return (
     <Suspense>
-    <div style={{ maxWidth: "980px", margin: "0 auto", paddingTop: "30px", paddingLeft: "20px", borderLeft: "1px solid #e5e7eb", borderRight: "1px solid #e5e7eb" }}>
+    <div style={{ maxWidth: "980px", margin: "0 auto", paddingTop: "30px", paddingLeft: "20px" }}>
       <InfoComponent prop={profile} logedInUser={isOwnProfile} services={services}/>
     </div>
     </Suspense>

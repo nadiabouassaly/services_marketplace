@@ -10,6 +10,7 @@ import {FaLocationArrow, FaBook, FaUser, FaBroom, FaDog, FaBaby, FaCar, FaBusine
 import ProfileIcon from "@/components/ProfileIcon" ;
 import { useProfileData } from "@/components/useProfileData";
 import AuthGate from "@/app/auth/components/AuthGate";
+import { supabase } from "@/app/auth/lib/supabase";
 
 const categoryIcons: Record<string, React.ReactNode> = {
   'Tutoring': <FaBook />,
@@ -118,8 +119,12 @@ export default function ServiceClient({ service, images }: { service: any; image
               <ul className="flex flex-col gap-4">
                 {reviews.map((review) => (
                   <li key={review.id} className="border border-gray-200 rounded-lg p-4">
+                    
+                    {/* Reviewer info */}
+                    <ReviewerHeader userprofileId={review.user_id} />
+
                     {/* Stars row */}
-                    <div className="flex items-center gap-1 mb-1">
+                    <div className="flex items-center gap-1 mb-1 mt-2">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <span
                           key={star}
@@ -130,7 +135,7 @@ export default function ServiceClient({ service, images }: { service: any; image
                       ))}
                     </div>
 
-                    {/* Comment (only if present) */}
+                    {/* Comment */}
                     {review.comment && (
                       <p className="text-sm text-gray-700 mt-1">{review.comment}</p>
                     )}
@@ -157,4 +162,44 @@ export default function ServiceClient({ service, images }: { service: any; image
 
     </main>
   );
+
+  function ReviewerHeader({ userprofileId }: { userprofileId: string | null}) {
+    const [name, setName] = useState<string | null>(null);
+    const [pictureUrl, setPictureUrl] = useState<string | null>(null);
+
+    useEffect(() => {
+      const fetch = async () => {
+        const { data, error } = await supabase
+          .from("userprofile")
+          .select("firstname, lastname, profilePicture")
+          .eq("userprofile_id", userprofileId)
+          .single();
+
+        if (!error && data) {
+          setName(`${data.firstname} ${data.lastname}`);
+          setPictureUrl(data.profilePicture ?? null);
+        }
+      };
+      if (userprofileId) fetch();
+    }, [userprofileId]);
+
+    return (
+      <div className="flex items-center gap-2 mb-1">
+        {/* Avatar */}
+        <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center flex-shrink-0">
+          {pictureUrl ? (
+            <img src={pictureUrl} className="w-full h-full object-cover" />
+          ) : (
+            <FaUser className="text-gray-400 text-sm" />
+          )}
+        </div>
+
+        {/* Name */}
+        <span className="text-sm font-semibold text-gray-800">
+          {name ?? "Anonymous"}
+        </span>
+      </div>
+    );
+  }
+
 }
