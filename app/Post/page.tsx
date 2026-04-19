@@ -67,7 +67,6 @@ export default function Post() {
           | "Transportation"
           | "Other",
         availability: "",
-        userprofile_id: userId
       });
       setStatus("Service created successfully!");
       setName("");
