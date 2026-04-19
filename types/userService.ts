@@ -24,11 +24,12 @@ export type UserService = {
     created_at : string
     availability: string
     category : "Tutoring" | "Babysitting" | "Elderly Care" | "Home Maintenance" | "Pet Care" | "Transportation" | "Other"
+    images?: image[]
 }
 
 export type image = {
     id : number;
-    upload_at : string;
+    uploaded_at : string;
     user_id : string;
     service_id : string;
     file_path : string;

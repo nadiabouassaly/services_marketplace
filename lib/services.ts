@@ -1,19 +1,22 @@
 import {UserService, Profile} from '@/types/userService'
 import {supabase} from '@/lib/db'
 
-export async function getServices(){
-    const {data} = await supabase.from('services').select('*')
+export async function getServices() {
+  const { data } = await supabase
+    .from('services')
+    .select('*, images(file_path, is_primary)');
 
-    return data as UserService[]
+  return data as any[];
 }
 
-//fetching the services
 export async function getServiceByCategory(categories : string[], currentPage: number, maxPrice: number = 100, search: string){
-    const from = (currentPage - 1) * 12;
-    const to = from + 12 - 1;
+    const from = (currentPage - 1) * 18;
+    const to = from + 18 - 1;
     const price = Number(maxPrice);
 
-    let query = supabase.from('services').select('*', { count: 'exact' });
+    let query = supabase
+    .from('services')
+    .select('*, images(file_path, is_primary)', { count: 'exact' });
 
     if (search != "" && search.trim() !== "" ) {
  

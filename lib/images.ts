@@ -18,13 +18,13 @@ export async function uploadImages(files: FileList) {
     const fileName = `${Date.now()}-${file.name}`;
 
     const { data, error } = await supabase.storage
-      .from("images")
+      .from("service-images")
       .upload(`services/${fileName}`, file);
 
     if (error) throw error;
 
     const { data: publicUrl } = supabase.storage
-      .from("images")
+      .from("service-images")
       .getPublicUrl(data.path);
 
     urls.push(publicUrl.publicUrl);
@@ -33,14 +33,21 @@ export async function uploadImages(files: FileList) {
   return urls;
 }
 
-export async function addImages(serviceId: string, urls: string[]) {
-  const rows = urls.map((url) => ({
+export async function addImages(serviceId: string, urls: string[], userId: string) {
+  const rows = urls.map((url, index) => ({
     service_id: serviceId,
-    url,
+    file_path: url,
+    user_id: userId,
+    image_type: "service",
+    is_primary: index === 0,
   }));
 
-  const { data, error } = await supabase.from('images').insert(rows);
+  const { data, error } = await supabase.from("images").insert(rows);
 
-  if (error) throw error;
+  if (error) {
+    console.error(error);
+    throw error;
+  }
+
   return data;
 }
