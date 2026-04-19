@@ -7,7 +7,15 @@ import { getProfileByID, getServicesByUserId } from "@/lib/services";
 import InfoComponent from "../../components/InfoComponent";
 import { useSearchParams } from "next/navigation";
 
-export default function ProfilePage() {
+export default function Page(){
+  return (
+    <Suspense fallback={<div>Loading profile...</div>}>
+      <ProfilePage />
+    </Suspense>
+  );
+}
+
+function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [services, setServices] = useState<UserService[]>([]);
   const [loading, setLoading] = useState(true);
