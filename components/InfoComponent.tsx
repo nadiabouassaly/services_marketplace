@@ -1,16 +1,19 @@
 "use client"
 
-import { Profile } from "@/types/userService"
-import { useContext, useState, createContext, useEffect, useRef} from "react";
+import { Profile, UserService } from "@/types/userService"
+import { useContext, useState, createContext, useRef} from "react";
 import Image from "next/image";
 import updateProfile from "@/lib/profile";
 import { z } from "zod";
+import Card from "./Card";
+import { getNumberOfServicesById} from "@/lib/services";
 
 const UserContext = createContext(false) ;
-const ContextProvider = createContext<string[]>([]);
 
 type InfoProp = {
     prop: Profile
+    logedInUser: boolean
+    services: UserService[]
 }
 
 type SkillProp = {
@@ -35,12 +38,17 @@ export default function InfoComponent(profile: InfoProp){
     const areaCode = phoneNumber.substring(0, index);
     const number = phoneNumber.substring(index+1);
     
+    const today = new Date() ;
+    const age = today.getFullYear() - date.getFullYear() ;
+
     const [phone, setPhone] = useState({
     areaCode: areaCode,
     number: number
     })
 
     const [useSkills, setSkills] = useState(useProfile.skills || []);
+
+    const services = profile.services ;
 
     const buttonStyle = {
         backgroundColor: "#007BFF",
@@ -78,7 +86,7 @@ export default function InfoComponent(profile: InfoProp){
         height: 28,
         borderRadius: "50%",
         fontSize: "20px",
-        lineHeight: "26px",   // slightly less than height centers the + visually
+        lineHeight: "26px", 
         textAlign: "center" as const,
         background: "white",
         cursor: "pointer",
@@ -155,6 +163,8 @@ export default function InfoComponent(profile: InfoProp){
         setValidInputs(true);
         setEditing(false);
         handleSave() ;
+        
+        checkForDeletedServices() ;
         }
 
         else {
@@ -163,7 +173,15 @@ export default function InfoComponent(profile: InfoProp){
         }
     }
 
-    const fullPhone = areaCode + " " + number
+    const checkForDeletedServices = async () =>{
+        const temp = await getNumberOfServicesById(profile.prop.userprofile_id)
+
+        if(temp != profile.services.length)
+        window.location.reload()
+    };
+
+    
+    const fullPhone = phone.areaCode + " " + phone.number
     const filteredSkills = useSkills.filter(skill => skill.trim() !== "") 
 
     const updatedProfile = {
@@ -200,8 +218,10 @@ export default function InfoComponent(profile: InfoProp){
     console.log(file) // do whatever you need with the file
     }
 
+
     return(
             <UserContext.Provider value={useEditing}>
+            <>
             <form onSubmit={onSave} noValidate>
             <div className="flex items-start gap-4">
             <div style={{width: "275px"}}>
@@ -214,14 +234,14 @@ export default function InfoComponent(profile: InfoProp){
             {useEditing == true && <button type="button"style={addButton} className="border-1 border-gray-350 shadow-[0_0_5px_#B0BEC5]" onClick={() => fileInputRef.current?.click()}>+</button>}
             </div>
 
-            {useEditing != true && <button style={buttonStyle} onClick={()=>setEditing(true)}>Edit Profile</button>}
+            {useEditing != true && profile.logedInUser && <button style={buttonStyle} onClick={()=>setEditing(true)}>Edit Profile</button>}
             {useEditing == true && <button type = "submit" style={buttonStyle2} >Save changes</button>}
             </div>
 
             </div>  
             
             <div style={{ display: "flex", flexDirection: "column"}}>
-            <h1 className = "text-4xl font-bold mb-4.5" style={{color: "#1460b1"}}>My Profile</h1> 
+            <h1 className = "text-4xl font-bold mb-4.5" style={{color: "#1460b1"}}>{profile.logedInUser? "My Profile": "Profile"}</h1> 
             {useValidInputs == false && useSaving == true && <p style={{marginTop:"-7px", marginBottom:"5px", fontSize:"15px", color:"red"}}>{firstError}</p>}
             <div className="flex items-start gap-5">
             
@@ -244,15 +264,20 @@ export default function InfoComponent(profile: InfoProp){
                     {useEditing == true && <input name="lastName" required onChange={(e) => {if (e.currentTarget.validity.valid){setValidInputs(true)}; setProfile({ ...useProfile, lastname: e.target.value })}  } onInvalid={()=>setValidInputs(false)} style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "11px", resize:"none"}} defaultValue={useProfile.lastname}/>}
                 </div>
 
+                {profile.logedInUser == false && <div>
+                <p style={{color: "#4d5055", fontSize: "12px"}}>AGE</p>
+                <p style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "17px"}}>{age}</p>
+                </div>}
+
                 </div>
 
-                <p style={{color: "#4d5055", fontSize: "12px"}}>DATE OF BIRTH {useEditing == true && <span style={{color: "red"}}>*</span>} </p>
-                {useEditing == false && <p style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "17px"}}>{str}</p>}
+                {profile.logedInUser && <p style={{color: "#4d5055", fontSize: "12px"}}>DATE OF BIRTH{useEditing == true && <span style={{color: "red"}}>*</span>} </p>}
+                {useEditing == false && profile.logedInUser && <p style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "17px"}}>{profile.logedInUser? str: age}</p>}
                 {useEditing == true && <input name="dateOfBirth" required onInvalid={()=>setValidInputs(false)} type="date" onChange={(e) => {if (e.currentTarget.validity.valid){setValidInputs(true)}; setProfile({ ...useProfile, dateofbirth: e.target.value })}  } style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "11px", resize:"none"}} defaultValue={useProfile.dateofbirth}/>}
 
             </div>
 
-            <div>
+            { profile.logedInUser && <div>
             {/*Contact Info Section */}
             <h2 className="font-bold mb-0.5" style={{fontSize: "19px"}}>Contact Information</h2>
 
@@ -275,7 +300,8 @@ export default function InfoComponent(profile: InfoProp){
             {useEditing == false && <p style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"266px", marginBottom: "17px"}}>{useProfile.email}</p>}
             {useEditing == true && <input name="email" required onInvalid={()=>setValidInputs(false)} type="email" onChange={(e) => {if (e.currentTarget.validity.valid){setValidInputs(true); setProfile({ ...useProfile, email: e.target.value })}  }} style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"266px", marginBottom: "17px", resize:"none"}} defaultValue={useProfile.email}/>}
             </div>
-            </div> {/*end of flex- gap-5 div*/}
+            }
+            </div>  {/*end of flex- gap-5 div*/}
 
             {/* Technical Info Section */}
             <h2 className="font-bold mb-0.5" style={{fontSize: "19px"}}>Technical Information</h2>
@@ -304,6 +330,22 @@ export default function InfoComponent(profile: InfoProp){
         </div>
         </div>
         </form>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-[900px] ml-4 mt-3">
+            {services.map((card) => (
+            <Card
+                key={card.services_id}
+                id={card.services_id.toString()}
+                name={card.name}
+                price={card.price}
+                description={card.description}
+                category={card.category}
+                editing={useEditing}
+            />
+            ))}
+        </div>
+
+        </>
         </UserContext.Provider>
     )
     

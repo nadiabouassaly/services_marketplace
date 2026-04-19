@@ -3,7 +3,7 @@ import { FaBook, FaUser, FaBroom, FaDog, FaBaby, FaCar } from 'react-icons/fa';
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getReviewsForService } from "@/lib/reviewsApi";
-
+import { deleteServiceByID } from '@/lib/services';
 
 type CardProps = {
   name: string;
@@ -11,7 +11,9 @@ type CardProps = {
   description: string;
   price: number;
   category: string; // category prop
+  editing: boolean 
 };
+
 
 // Map category to icon
 const categoryIcons: Record<string, React.ReactNode> = {
@@ -23,13 +25,13 @@ const categoryIcons: Record<string, React.ReactNode> = {
   'transportation': <FaCar />,
 };
 
-
-export default function Card({ id, name, description, price, category }: CardProps) {
+export default function Card({ id, name, description, price, category, editing }: CardProps) {
   const icon = categoryIcons[category?.toLowerCase()];
   const router = useRouter();
 
   const [average, setAverage] = useState(0);
   const [count, setCount] = useState(0);
+  const [deleted, setDeleted] = useState(false) ;
 
   useEffect(() => {
     async function fetchReviews() {
@@ -44,8 +46,32 @@ export default function Card({ id, name, description, price, category }: CardPro
     fetchReviews();
   }, [id]);
 
+  const onClick = ()=>{
+
+    if(editing == false)
+    router.push(`/services/${id}`)
+    }
+
+    const deleteService= async (service_id: string, name: string)=>{
+
+      const confirmed = window.confirm("Are you sure you want to delete \"" + name + "\" service? This action cannot be undone") ;
+
+      if(confirmed){
+      await deleteServiceByID(service_id) 
+      setDeleted(true) ;
+      }
+
+      else
+      return ;
+    }
+
+  const style = {
+    opacity: deleted? 0.5: ""
+  }
+
   return (
-    <div onClick={() => router.push(`/services/${id}`)} className="bg-white rounded-lg shadow-sm border border-gray-300 hover:shadow-md transition-shadow flex flex-col overflow-hidden">
+    <div style={style} className="flex flex-col h-full">
+    <div onClick={onClick} className="bg-white rounded-lg shadow-sm border border-gray-300 hover:shadow-md transition-shadow flex flex-col overflow-hidden flex-1">
       {/* Top banner */}
       <div className="w-full h-32 bg-blue-100 flex items-center justify-center">
         <div className="w-full h-32 bg-blue-100 flex items-center justify-center text-blue-600 text-4xl opacity-40">
@@ -80,6 +106,9 @@ export default function Card({ id, name, description, price, category }: CardPro
           <p className="text-[#0a74ff] font-bold">${price}</p>
         </div>
       </div>
+
+    {editing && deleted == false && <button style={{marginLeft:"113.5px", marginTop:"6px", color:"red"}} onClick={()=>deleteService(id, name)}>delete</button>}
+    </div>
     </div>
   );
 }

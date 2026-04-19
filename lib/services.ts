@@ -81,3 +81,14 @@ export async function getProfileByID(id: string){
     const {data} = await supabase.from('userprofile').select('*').eq('userprofile_id', id).single() ;
     return data as Profile ;
 }
+
+export async function deleteServiceByID(id: string){
+    const {data, error} = await supabase.from('services').delete().eq('services_id', id);
+
+    return error ;
+}
+
+export async function getNumberOfServicesById(id: string){
+    const {count} = await supabase.from('services').select('*', { count: 'exact', head: true }).eq('userprofile_id', id)
+    return count ?? 0
+}

@@ -1,48 +1,62 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { supabase } from "@/lib/db";
 import { Profile, UserService } from "@/types/userService";
 import { getProfileByID, getServicesByUserId } from "@/lib/services";
-import Card from "@/components/Card";
 import InfoComponent from "../../components/InfoComponent";
+import { useSearchParams } from "next/navigation";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [services, setServices] = useState<UserService[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams() ;
+  const [isOwnProfile, setIsOwnProfile] = useState(true);
+
+  const user = searchParams.get("id") || "" ;
 
   useEffect(() => {
     async function loadProfile() {
       try {
         const { data } = await supabase.auth.getUser();
-        const userId = data.user?.id;
+        const loggedInUserId = data.user?.id;
 
-        if (!userId) {
-          setError("Please log in to view your profile.");
+        if (!loggedInUserId && !user) {
+          setError("No user found.");
           return;
         }
 
-        const profileData = await getProfileByID(userId);
+        const isOwnProfile = user
+          ? user === loggedInUserId
+          : true;
+
+        const targetUserId = user || loggedInUserId;
+
+        const profileData = await getProfileByID(targetUserId!);
         if (!profileData) {
-          setError("No profile found for the current user.");
+          setError("No profile found.");
         } else {
           setProfile(profileData);
         }
 
-        const servicesData = await getServicesByUserId(userId);
+        const servicesData = await getServicesByUserId(targetUserId!);
         setServices(servicesData ?? []);
+
+        // optional: store it in state if InfoComponent needs it
+        setIsOwnProfile(isOwnProfile);
+
       } catch (err) {
         console.error(err);
-        setError("Unable to load profile. Please try again.");
+        setError("Unable to load profile.");
       } finally {
         setLoading(false);
       }
     }
 
     loadProfile();
-  }, []);
+  }, [user]);
 
   if (loading) {
     return (
@@ -65,21 +79,11 @@ export default function ProfilePage() {
   }
 
   return (
+    <Suspense>
     <div style={{ maxWidth: "980px", margin: "0 auto", paddingTop: "30px", paddingLeft: "20px", borderLeft: "1px solid #e5e7eb", borderRight: "1px solid #e5e7eb" }}>
-      <InfoComponent prop={profile} />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-[900px] ml-4 mt-3">
-        {services.map((card) => (
-          <Card
-            key={card.services_id}
-            id={card.services_id.toString()}
-            name={card.name}
-            price={card.price}
-            description={card.description}
-            category={card.category}
-          />
-        ))}
-      </div>
+      <InfoComponent prop={profile} logedInUser={isOwnProfile} services={services}/>
     </div>
+    </Suspense>
   );
 }
 

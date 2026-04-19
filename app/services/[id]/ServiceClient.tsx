@@ -8,6 +8,8 @@ import ReviewModal from "@/components/ReviewModal";
 import { getReviewsForService } from "@/lib/reviewsApi";
 import { Review } from "@/types/review";
 import {FaLocationArrow, FaBook, FaUser, FaBroom, FaDog, FaBaby, FaCar, FaBusinessTime } from 'react-icons/fa';
+import ProfileIcon from "@/components/ProfileIcon" ;
+
 
 const categoryIcons: Record<string, React.ReactNode> = {
   'Tutoring': <FaBook />,
@@ -18,6 +20,7 @@ const categoryIcons: Record<string, React.ReactNode> = {
   'Transportation': <FaCar />,
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function ServiceClient({ service, images }: { service: any; images: any }) {
   const [showModal, setShowModal] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
@@ -58,7 +61,7 @@ export default function ServiceClient({ service, images }: { service: any; image
               <h1 className="text-4xl font-bold text-gray-900">{service.name}</h1>
               <p className="text-sm text-gray-400 mt-1">Posted {timeAgo(service.created_at)}</p>
             </div>
-            <div className={styles.avatar}><FaUser /></div>
+            {service.userprofile_id != userId && <ProfileIcon id={service.userprofile_id}/>}
           </div>
 
           {images ? <ImageCarousel images={images} /> : null}

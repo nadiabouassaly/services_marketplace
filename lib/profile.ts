@@ -2,9 +2,6 @@ import {supabase} from '@/lib/db'
 import { Profile } from '@/types/userService';
 
 export default async function updateProfile(userId: string, profile: Profile) {
-
-    console.log("userId:", userId)
-    console.log("profile:", JSON.stringify(profile))
     
     const { error } = await supabase
         .from("userprofile")

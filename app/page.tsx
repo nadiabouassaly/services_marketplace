@@ -46,7 +46,7 @@ export default async function HomePage({searchParams}: {searchParams: Promise<{ 
 
             <ServicesHeader count={totalPages} />
         
-            {totalPages >= 1 && <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {totalPages >= 1 && <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
               {services.map((card) => (
                 <Card key={card.services_id}
                        id={card.services_id.toString()} 
@@ -54,6 +54,7 @@ export default async function HomePage({searchParams}: {searchParams: Promise<{ 
                       price = {card.price}
                       description={card.description}
                       category={card.category}
+                      editing = {false}
                       />
                 ))}            
             </div>}

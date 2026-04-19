@@ -19,6 +19,7 @@ export default function ReviewModal({ serviceId, userId, onClose }: ReviewModalP
         await addReview({ service_id: serviceId, user_id: userId, rating, comment: comment || null });
       onClose();
       alert("Review saved!");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         console.error("Supabase error:", e);
         alert(`Failed to save review: ${e.message || JSON.stringify(e)}`);
