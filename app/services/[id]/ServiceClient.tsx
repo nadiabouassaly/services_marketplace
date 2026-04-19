@@ -58,7 +58,7 @@ export default function ServiceClient({ service, images }: { service: any; image
               <h1 className="text-4xl font-bold text-gray-900">{service.name}</h1>
               <p className="text-sm text-gray-400 mt-1">Posted {timeAgo(service.created_at)}</p>
             </div>
-            {service.userprofile_id != userId && <ProfileIcon id={service.userprofile_id}/>}
+            {service.userprofile_id != profile?.userprofile_id && <ProfileIcon id={service.userprofile_id}/>}
           </div>
 
           {images ? <ImageCarousel images={images} /> : null}
