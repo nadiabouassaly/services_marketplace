@@ -2,12 +2,29 @@
 
 import { Profile, UserService } from "@/types/userService"
 import { useContext, useState, createContext, useRef} from "react";
-import Image from "next/image";
 import updateProfile from "@/lib/profile";
 import { z } from "zod";
 import Card from "./Card";
 import { getNumberOfServicesById} from "@/lib/services";
 import { supabase } from "@/app/auth/lib/supabase";
+import { FaUser } from "react-icons/fa"
+
+
+type User = {
+  id: string
+}
+
+export function ProfileIcon({ url }: { url?: string }) {
+  return (
+    <div className="w-[120px] h-[120px] rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+      {url ? (
+        <img src={url} className="w-full h-full object-cover" />
+      ) : (
+        <FaUser className="text-gray-400 text-5xl" />
+      )}
+    </div>
+  )
+}
 
 const UserContext = createContext(false) ;
 
@@ -212,11 +229,47 @@ export default function InfoComponent(profile: InfoProp){
     //Upload Profile Picture from the user
     const fileInputRef = useRef<HTMLInputElement>(null)
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    console.log(file) // do whatever you need with the file
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        const fileName = `${useProfile.userprofile_id}-${Date.now()}`
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
+            .from("profile-images")
+            .upload(fileName, file, {
+            upsert: true,
+            cacheControl: "3600",
+            })
+
+        if (uploadError) {
+            console.error("Upload error:", uploadError)
+            return
+        }
+
+        const { data } = supabase.storage
+            .from("profile-images")
+            .getPublicUrl(fileName)
+
+        const imageUrl = data?.publicUrl
+
+        console.log("imageUrl:", imageUrl)
+
+        if (!imageUrl) {
+            console.error("Could not get public URL")
+            return
+        }
+
+        const updated = {
+            ...useProfile,
+            profilePicture: imageUrl,
+        }
+
+        setProfile(updated)
+        await updateProfile(useProfile.userprofile_id, updated)
     }
+
 
     const signOut = async ()=>{
         
@@ -238,10 +291,29 @@ export default function InfoComponent(profile: InfoProp){
             
             <div style={{paddingLeft: "70px"}}>
 
-            <div style={{position:"relative", width:"120px", height:"127px"}}>
-            <Image src={useProfile.profilePicture || "/profileIcon.jpg"} alt="Default Profile Image" className = "rounded-full object-cover border-2 border-[#007bffeb] shadow-[0_0_5px_#B0BEC5] mt-1" width={120} height={120}/>
-            {useEditing == true && <input type="file" ref={fileInputRef} onChange={handleFileChange} style={{ display: "none" }} accept="image/*"/>}
-            {useEditing == true && <button type="button"style={addButton} className="border-1 border-gray-350 shadow-[0_0_5px_#B0BEC5]" onClick={() => fileInputRef.current?.click()}>+</button>}
+            <div style={{position:"relative"}}>
+                <ProfileIcon url={useProfile.profilePicture} />
+
+                {useEditing == true && (
+                    <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    style={{ display: "none" }}
+                    accept="image/*"
+                    />
+                )}
+
+                {useEditing == true && (
+                    <button
+                    type="button"
+                    style={addButton}
+                    className="border-1 border-gray-350 shadow-[0_0_5px_#B0BEC5]"
+                    onClick={() => fileInputRef.current?.click()}
+                    >
+                    +
+                    </button>
+                )}
             </div>
 
             {useEditing != true && profile.logedInUser && <button style={buttonStyle} onClick={()=>setEditing(true)}>Edit Profile</button>}
@@ -256,7 +328,7 @@ export default function InfoComponent(profile: InfoProp){
             {/* <div style={{display: "flex", justifyContent: "space-between", alignItems: "center" }}> */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
 
-            <h1 className = "text-4xl font-bold mb-4.5" style={{color: "#1460b1"}}>{profile.logedInUser? "My Profile": "Profile"}</h1> 
+            <h1 className = "text-3xl font-bold mb-4.5" style={{color: "#007BFF"}}>{profile.logedInUser? "My Profile": "Profile"}</h1> 
             {profile.logedInUser && <button type="button"  style={{marginRight:"40px", marginBottom:"1px", color:"red", fontSize:"16.5px"}} onClick={()=>signOut()}>Sign out</button>}
             </div>
 
@@ -273,7 +345,7 @@ export default function InfoComponent(profile: InfoProp){
 
                 <div>
                     <p style={{color: "#4d5055", fontSize: "12px"}}>FIRST NAME {useEditing == true && <span style={{color: "red"}}>*</span>} </p>
-                    {useEditing == false && <p style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "11px"}}>{useProfile.firstname}</p>}
+                    {useEditing == false && <p style={{border: "none", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "11px"}}>{useProfile.firstname}</p>}
                     {useEditing == true && <input name="firstName" required id="firstName" onChange={(e) => {if (e.currentTarget.validity.valid){setValidInputs(true)}; setProfile({ ...useProfile, firstname: e.target.value })}  } style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "11px", resize:"none"}} defaultValue={useProfile.firstname}/>}
                 </div>
 
