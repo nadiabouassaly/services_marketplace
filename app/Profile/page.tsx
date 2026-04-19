@@ -21,13 +21,20 @@ function ProfilePage() {
 
   const { profile, services, isOwnProfile, signedIn } = useProfileData(user);
 
+  if (signedIn === null) {
+  return <div>Loading...</div>;
+  }
+  
+  if (signedIn === false) {
+    return <AuthGate />;
+  }
+
   if (!profile) {
-  return <div>Loading profile...</div>;
+    return <div>Loading profile...</div>;
   }
 
   return (
     <Suspense>
-    {signedIn == false && <AuthGate />}
     <div style={{ maxWidth: "980px", margin: "0 auto", paddingTop: "30px", paddingLeft: "20px", borderLeft: "1px solid #e5e7eb", borderRight: "1px solid #e5e7eb" }}>
       <InfoComponent prop={profile} logedInUser={isOwnProfile} services={services}/>
     </div>

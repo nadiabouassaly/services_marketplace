@@ -7,6 +7,7 @@ import updateProfile from "@/lib/profile";
 import { z } from "zod";
 import Card from "./Card";
 import { getNumberOfServicesById} from "@/lib/services";
+import { supabase } from "@/app/auth/lib/supabase";
 
 const UserContext = createContext(false) ;
 
@@ -217,13 +218,24 @@ export default function InfoComponent(profile: InfoProp){
     console.log(file) // do whatever you need with the file
     }
 
+    const signOut = async ()=>{
+        
+        const confirmed = window.confirm("Are you sure you want to sign out?") ;
+
+        if(confirmed){
+        await supabase.auth.signOut();
+        window.location.reload()
+        }
+    }
+
     return(
             <UserContext.Provider value={useEditing}>
             <>
+
             <form onSubmit={onSave} noValidate>
             <div className="flex items-start gap-4">
             <div style={{width: "275px"}}>
-
+            
             <div style={{paddingLeft: "70px"}}>
 
             <div style={{position:"relative", width:"120px", height:"127px"}}>
@@ -238,8 +250,17 @@ export default function InfoComponent(profile: InfoProp){
 
             </div>  
             
-            <div style={{ display: "flex", flexDirection: "column"}}>
+            {/* <div style={{ display: "flex", flexDirection: "column"}}> */}
+            <div style={{ width: "980px", margin: "0 auto" }}>
+
+            {/* <div style={{display: "flex", justifyContent: "space-between", alignItems: "center" }}> */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+
             <h1 className = "text-4xl font-bold mb-4.5" style={{color: "#1460b1"}}>{profile.logedInUser? "My Profile": "Profile"}</h1> 
+            <button type="button"  style={{marginRight:"40px", marginBottom:"1px", color:"red", fontSize:"16.5px"}} onClick={()=>signOut()}>Sign out</button>
+            </div>
+
+
             {useValidInputs == false && useSaving == true && <p style={{marginTop:"-7px", marginBottom:"5px", fontSize:"15px", color:"red"}}>{firstError}</p>}
             <div className="flex items-start gap-5">
             
