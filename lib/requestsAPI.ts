@@ -4,24 +4,22 @@ import {request} from '@/types/request';
  
 export type RequestWithService = request & {
   services: {
-    title: string;
-    price: string;
+    name: string;
+    price: number;
   };
   requester: {
-    full_name: string;
-    avatar_url: string | null;
+    firstname: string;
+    lastname: string;
+    profilePicture: string | null;
   };
   provider: {
-    full_name: string;
-    avatar_url: string | null;
+    firstname: string;
+    lastname: string;
+    profilePicture: string | null;
   };
 };
 
-export async function createRequest({
-  service,
-  currentUser,
-  form,
-}: {
+export async function createRequest({ service, currentUser, form, }: {
   service: any;
   currentUser: { id: string | null }
   form: Pick<request, "message" | "budget" | "duration_requested" | "communication_method">;
@@ -40,19 +38,31 @@ export async function createRequest({
 }
 
 export async function fetchUserRequests(userId: string): Promise<RequestWithService[]> {
-  const { data, error } = await supabase
-    .from('requests')
-    .select(`
-      *,
-      services ( title, price ),
-      requester:userprofiles!requests_requester_id_fkey ( full_name, avatar_url ),
-      provider:userprofiles!requests_provider_id_fkey ( full_name, avatar_url )
-    `)
-    .or(`requester_id.eq.${userId},provider_id.eq.${userId}`)
-    .order('created_at', { ascending: false });
- 
+  // Step 1: fetch the requests
+  if (!userId) return [];
+  const { data: requests, error } = await supabase
+  .from('requests')
+  .select(`*, services ( name, price )`)
+  .or(`requester_id.eq.${userId},provider_id.eq.${userId}`);
+
+console.log('requests:', requests, 'error:', error);
   if (error) throw new Error(error.message);
-  return (data as RequestWithService[]) ?? [];
+  if (!requests?.length) return [];
+  const userIds = [...new Set(requests.flatMap(r => [r.requester_id, r.provider_id]))];
+  const { data: profiles, error: profilesError } = await supabase
+    .from('userprofile')
+    .select('userprofile_id, firstname, lastname, profilePicture')
+    .in('userprofile_id', userIds);
+
+  if (profilesError) throw new Error(profilesError.message);
+
+  const profileMap = Object.fromEntries(profiles?.map(p => [p.userprofile_id, p]) ?? []);
+
+  return requests.map(r => ({
+    ...r,
+    requester: profileMap[r.requester_id] ?? null,
+    provider: profileMap[r.provider_id] ?? null,
+  }));
 }
  
 export async function updateRequestStatus(
@@ -71,7 +81,7 @@ export async function deleteRequest(id: string): Promise<void> {
   const { error } = await supabase
     .from('requests')
     .delete()
-    .eq('id', id);
+    .eq('request_id', id);
  
   if (error) throw new Error(error.message);
 }

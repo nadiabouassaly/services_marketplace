@@ -1,5 +1,5 @@
 export type request = {
-    id: string;
+    request_id: string; 
     requester_id : string;
     service_id : string;
     provider_id : string;
@@ -8,4 +8,5 @@ export type request = {
     duration_requested: string;
     communication_method : string;
     status: "pending" | "accepted" | "rejected" | "completed";
+    created_at : string
 }

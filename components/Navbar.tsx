@@ -8,11 +8,18 @@ import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
+import { useCurrentUser } from '@/hooks/UseCurrentUser';
+import { useRequests } from '@/hooks/UseRequests';
 import { FaBell, FaRegBell } from "react-icons/fa";
+import { NotificationsPanel } from './NotificationsPanel';
 
 export default function Navbar() {
   const router = useRouter();
   const pathName = usePathname();
+  const { userId } = useCurrentUser();
+  const [panelOpen, setPanelOpen] = useState(false);
+  const { unreadCount } = useRequests(userId);
+
   
   return (
     <Suspense fallback={null}>
@@ -26,14 +33,26 @@ export default function Navbar() {
         <div className="flex items-center space-x-4">
           {(pathName != "/Profile") && <ProfileIcon id={""}/>}
           {(pathName == "/" || pathName == "/Profile") && <NavbarButton onClick={()=>router.push("/Post")}>+ Post a Service</NavbarButton>}
-          <button>
+          <button
+              onClick={() => setPanelOpen(true)}
+              className="relative"
+              aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}>
             <FaBell className="text-2xl text-blue-500 cursor-pointer" />
-            
+            {unreadCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 min-w-[17px] h-[17px] px-1 rounded-full bg-red-500 text-white text-[10px] font-semibold flex items-center justify-center border-2 border-white">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
           </button>
           
         </div>
       </div>
     </nav>
+    <NotificationsPanel
+        isOpen={panelOpen}
+        onClose={() => setPanelOpen(false)}
+        userId={userId}
+      />
     </Suspense>
   );
 }
