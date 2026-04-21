@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { supabase } from "@/app/auth/lib/supabase";
 import { usePathname, useRouter, useSearchParams} from "next/navigation";
 import { useProfileData } from "@/hooks/useProfileData";
@@ -8,6 +8,8 @@ import { useProfileData } from "@/hooks/useProfileData";
 export type AuthProp={
   closeOption: boolean
 }
+
+export const UserContext = createContext(false); 
 
 export default function AuthModal({closeOption}: AuthProp) {
   const [isLogin, setIsLogin] = useState(true);
@@ -22,6 +24,8 @@ export default function AuthModal({closeOption}: AuthProp) {
   const [skills, setSkills] = useState("");
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(true);
+  const [visitor, setVisitor] = useState(false) ;
+
   const router = useRouter(); 
   const searchParams = useSearchParams();
   const path = usePathname() ;
@@ -46,6 +50,7 @@ export default function AuthModal({closeOption}: AuthProp) {
         } else {
           alert("Logged in successfully!");
           setShowModal(false);
+          window.location.reload()
         }
       } else {
         const { data, error } = await supabase.auth.signUp({
@@ -80,10 +85,18 @@ export default function AuthModal({closeOption}: AuthProp) {
             } else {
               alert("Account and profile created successfully!");
               setShowModal(false);
+
+            if(path == "\Profile" || path == "\Post")
+            window.location.reload()
+
             }
           } else {
             alert("Account created successfully!");
             setShowModal(false);
+
+            if(path == "\Profile" || path == "Post")
+            window.location.reload()
+
           }
         }
       }
@@ -94,14 +107,6 @@ export default function AuthModal({closeOption}: AuthProp) {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-
-    if(path == "/" && signedIn == false && pageParam == null){
-    router.replace('/?page=1&filters=&maxPrice=&search=&visitor=true');
-    }
-
-  }, [pageParam, path, router, signedIn]);
 
   const onClose=()=>{
     setShowModal(false);
@@ -115,6 +120,7 @@ export default function AuthModal({closeOption}: AuthProp) {
   if (!showModal) return null;
 
   return (
+    <UserContext.Provider value={visitor}>
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white w-full max-w-md rounded-2xl shadow-xl p-6 relative">
         {closeOption == true && <button
@@ -125,7 +131,7 @@ export default function AuthModal({closeOption}: AuthProp) {
         </button>}
 
         {closeOption == false && <button
-          onClick={() =>router.push('/?visitor=true')}
+          onClick={() =>setVisitor(true)}
           className="absolute top-3 right-3 text-gray-500 hover:text-black"
         >
           ✕
@@ -249,5 +255,6 @@ export default function AuthModal({closeOption}: AuthProp) {
         </button>
       </div>
     </div>
+    </UserContext.Provider>
   );
 }

@@ -20,6 +20,7 @@ export type RequestWithService = request & {
 };
 
 export async function createRequest({ service, currentUser, form, }: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   service: any;
   currentUser: { id: string | null }
   form: Pick<request, "message" | "budget" | "duration_requested" | "communication_method">;
