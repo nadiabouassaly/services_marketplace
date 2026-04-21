@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import InfoComponent from "../../components/InfoComponent";
 import { useSearchParams } from "next/navigation";
 import AuthGate from "../auth/components/AuthGate";
-import { useProfileData } from "@/components/useProfileData";
+import { useProfileData } from "@/hooks/useProfileData";
 
 export default function Page(){
   return (

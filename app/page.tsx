@@ -11,7 +11,7 @@ import { Suspense} from 'react';
 import React from 'react';
 import AuthGate from "./auth/components/AuthGate";
 
-export default async function HomePage({searchParams}: {searchParams: Promise<{ filters?: string; page?: string; maxPrice?: string, search?: string }>}) {
+export default async function HomePage({searchParams}: {searchParams: Promise<{ filters?: string; page?: string; maxPrice?: string, search?: string, visitor?: string}>}) {
   
   const resolvedParams = await searchParams;
   
@@ -20,6 +20,7 @@ export default async function HomePage({searchParams}: {searchParams: Promise<{ 
   const page = Number(resolvedParams.page) || 1;
   const priceParam = resolvedParams.maxPrice ? Number(resolvedParams.maxPrice) : 100;
   const search = resolvedParams.search ?? ""
+  const visitor = resolvedParams.visitor || null ;
 
   const { services, totalPages } = await getServiceByCategory(filters, page, priceParam, search);
 
@@ -68,7 +69,7 @@ export default async function HomePage({searchParams}: {searchParams: Promise<{ 
         </div>
       </div>
     </div>
-    <AuthGate closeOption={true}/>
+    {visitor == null && <AuthGate closeOption={true}/>}
     </Suspense>
   );
 }

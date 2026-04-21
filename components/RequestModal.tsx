@@ -6,8 +6,9 @@ import { useRouter } from "next/navigation";
 import {createRequest} from "@/lib/requestsAPI";
 import {UserService, Profile} from '@/types/userService'
 import {supabase} from "@/lib/db"; 
+import { useProfileData } from "../hooks/useProfileData";
 
-export default function RequestServiceModal({ service, currentUser, onClose }: { service: any; currentUser: { id: string | null }; onClose: () => void }) {
+export default function RequestServiceModal({ service, currentUser, onClose }: { service: any; currentUser: string; onClose: () => void }) {
   const [modalNum, setModalNum] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({
@@ -17,19 +18,18 @@ export default function RequestServiceModal({ service, currentUser, onClose }: {
   communication_method : "",
 });
   const providerName = service?.profile?.name;
-const update = (field: string, value: string) => setForm((f) => ({ ...f, [field]: value }));
+  const update = (field: string, value: string) => setForm((f) => ({ ...f, [field]: value }));
   const router = useRouter();
+  const {profile, signedIn} = useProfileData("") ;
 
-const handleSubmit = async () => {
-  const { data } = await supabase.auth.getUser();
-  const userId = data.user?.id;
+  const handleSubmit = async () => {
 
-  if (!userId) {
+  if (!signedIn) {
     alert("You need to be logged in to request a service.");
     return;
   }
 
-  const { error } = await createRequest({ service, currentUser: { id: userId }, form });
+  const { error } = await createRequest({ service, currentUser: { id: profile?.userprofile_id || null }, form });
   if (error) {
     alert(JSON.stringify(error));
   } else {

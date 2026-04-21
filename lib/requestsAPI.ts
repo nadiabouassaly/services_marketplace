@@ -76,7 +76,7 @@ export async function updateRequestStatus(
  
   if (error) throw new Error(error.message);
 }
- 
+
 export async function deleteRequest(id: string): Promise<void> {
   const { error } = await supabase
     .from('requests')

@@ -4,7 +4,7 @@ import { FormEvent, Suspense, useState } from "react";
 import { createService } from "@/lib/services";
 import { supabase } from "@/lib/db";
 import { uploadImages, addImages } from "@/lib/images";
-import { useProfileData } from "@/components/useProfileData";
+import { useProfileData } from "@/hooks/useProfileData";
 import AuthGate from "../auth/components/AuthGate";
 
 const categories = [

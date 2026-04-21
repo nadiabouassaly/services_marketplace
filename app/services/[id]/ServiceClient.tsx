@@ -8,7 +8,7 @@ import { getReviewsForService } from "@/lib/reviewsApi";
 import { Review } from "@/types/review";
 import {FaLocationArrow, FaBook, FaUser, FaBroom, FaDog, FaBaby, FaCar, FaBusinessTime } from 'react-icons/fa';
 import ProfileIcon from "@/components/ProfileIcon" ;
-import { useProfileData } from "@/components/useProfileData";
+import { useProfileData } from "@/hooks/useProfileData";
 import AuthGate from "@/app/auth/components/AuthGate";
 import { supabase } from "@/app/auth/lib/supabase";
 import RequestModal from "@/components/RequestModal";
@@ -26,13 +26,12 @@ const categoryIcons: Record<string, React.ReactNode> = {
 export default function ServiceClient({ service, images }: { service: any; images: any }) {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
   const [average, setAverage] = useState(0);
   const [count, setCount] = useState(0);
   const [reviews, setReviews] = useState<Review[]>([]);
-
-  const {profile, signedIn} = useProfileData("") ;
   
+  const {profile, signedIn} = useProfileData("") ;
+
   useEffect(() => {
     async function fetchReviews() {
       try {
@@ -45,6 +44,7 @@ export default function ServiceClient({ service, images }: { service: any; image
       }
     }
     if (service?.services_id) fetchReviews();
+
   }, [service?.services_id]);
 
   if (!service) return <p className={styles.notFound}>Service Not Found :(</p>;
@@ -60,7 +60,7 @@ export default function ServiceClient({ service, images }: { service: any; image
               <h1 className="text-4xl font-bold text-gray-900">{service.name}</h1>
               <p className="text-sm text-gray-400 mt-1">Posted {timeAgo(service.created_at)}</p>
             </div>
-            {service.userprofile_id != profile?.userprofile_id && <ProfileIcon id={service.userprofile_id}/>}
+            {profile && service.userprofile_id != profile?.userprofile_id && <ProfileIcon id={service.userprofile_id}/>}
           </div>
 
           {images ? <ImageCarousel images={images} /> : null}
@@ -98,7 +98,7 @@ export default function ServiceClient({ service, images }: { service: any; image
 
           <p className="text-lg text-black leading-relaxed mb-6">{service.description}</p>
 
-          <div className="flex gap-3 mt-6">
+           {profile && profile.userprofile_id != service.userprofile_id &&<div className="flex gap-3 mt-6">
             <button
               onClick={() => setShowReviewModal(true)}
               className="flex-1 px-4 py-2 rounded-md border border-[#0a74ff] text-[#0a74ff] bg-white hover:bg-blue-50 transition-colors duration-300 ease-in-out">
@@ -109,9 +109,7 @@ export default function ServiceClient({ service, images }: { service: any; image
               className="flex-1 px-4 py-2 rounded-md bg-[#0a74ff] text-white hover:bg-[#1166f0] transition-colors duration-300 ease-in-out">
               Request Service
             </button>
-          </div>
-
-
+          </div>}
 
           {/* ── Reviews section ── */}
           <div className="mt-10">
@@ -162,16 +160,17 @@ export default function ServiceClient({ service, images }: { service: any; image
           userId={profile?.userprofile_id ?? null}
           onClose={() => setShowReviewModal(false)}
         />
-      )}
-
-      
-      {showRequestModal && (
+      )} 
+  
+      {showRequestModal && signedIn && (
         <RequestModal
           service = {service}
-          currentUser={{ id: userId }}
+          currentUser={profile?.userprofile_id ?? ""}
           onClose={() => setShowRequestModal(false)}
         />
       )}
+
+      {showRequestModal && signedIn == false && <AuthGate closeOption={true}/>}
 
     </main>
   );

@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { supabase } from "@/app/auth/lib/supabase";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams} from "next/navigation";
+import { useProfileData } from "@/hooks/useProfileData";
 
 export type AuthProp={
   closeOption: boolean
@@ -22,7 +23,13 @@ export default function AuthModal({closeOption}: AuthProp) {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(true);
   const router = useRouter(); 
+  const searchParams = useSearchParams();
+  const path = usePathname() ;
   
+  const pageParam = searchParams.get("visitor")
+  const {signedIn } = useProfileData("");
+
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -88,20 +95,37 @@ export default function AuthModal({closeOption}: AuthProp) {
     }
   };
 
+  useEffect(() => {
+
+    if(path == "/" && signedIn == false && pageParam == null){
+    router.replace('/?page=1&filters=&maxPrice=&search=&visitor=true');
+    }
+
+  }, [pageParam, path, router, signedIn]);
+
+  const onClose=()=>{
+    setShowModal(false);
+
+    if(path == "/" && signedIn == false && pageParam == null){
+    router.replace('/?page=1&filters=&maxPrice=&search=&visitor=true');
+    }
+
+  }
+
   if (!showModal) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white w-full max-w-md rounded-2xl shadow-xl p-6 relative">
         {closeOption == true && <button
-          onClick={() => setShowModal(false)}
+          onClick={()=>onClose()}
           className="absolute top-3 right-3 text-gray-500 hover:text-black"
         >
           ✕
         </button>}
 
         {closeOption == false && <button
-          onClick={() =>router.push('/')}
+          onClick={() =>router.push('/?visitor=true')}
           className="absolute top-3 right-3 text-gray-500 hover:text-black"
         >
           ✕
