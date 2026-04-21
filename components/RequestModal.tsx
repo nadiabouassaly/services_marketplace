@@ -4,10 +4,9 @@ import { useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import {createRequest} from "@/lib/requestsAPI";
-import {UserService, Profile} from '@/types/userService'
-import {supabase} from "@/lib/db"; 
 import { useProfileData } from "../hooks/useProfileData";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function RequestServiceModal({ service, currentUser, onClose }: { service: any; currentUser: string; onClose: () => void }) {
   const [modalNum, setModalNum] = useState(1);
   const [submitted, setSubmitted] = useState(false);
