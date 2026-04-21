@@ -16,7 +16,6 @@ export default function AuthModal({closeOption}: AuthProp) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstname, setFirstname] = useState("");
-  const [middlename, setMiddlename] = useState("");
   const [lastname, setLastname] = useState("");
   const [profession, setProfession] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -63,6 +62,27 @@ export default function AuthModal({closeOption}: AuthProp) {
           window.location.reload()
         }
       } else {
+        // Check if user is at least 14 years old
+        if (dateofbirth) {
+          const birthDate = new Date(dateofbirth);
+          const today = new Date();
+          const age = today.getFullYear() - birthDate.getFullYear();
+          const monthDiff = today.getMonth() - birthDate.getMonth();
+          
+          if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            // Birthday hasn't occurred yet this year
+            if (age < 14 || (age === 14 && (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())))) {
+              alert("Restricted for people younger than 14 years old");
+              setLoading(false);
+              return;
+            }
+          } else if (age < 14) {
+            alert("Restricted for people younger than 14 years old");
+            setLoading(false);
+            return;
+          }
+        }
+
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
@@ -76,7 +96,6 @@ export default function AuthModal({closeOption}: AuthProp) {
               userprofile_id: data.user.id,
               email: data.user.email,
               firstname: firstname.trim(),
-              middlename: middlename.trim() || null,
               lastname: lastname.trim(),
               profession: profession.trim() || null,
               phoneNumber: phoneNumber.trim(),
@@ -199,26 +218,15 @@ export default function AuthModal({closeOption}: AuthProp) {
                 />
               </div>
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <input
-                  type="text"
-                  placeholder="Middle Name (optional)"
-                  className="w-full border rounded-lg px-3 py-2"
-                  value={middlename}
-                  onChange={(e) => setMiddlename(e.target.value)}
-                  pattern="[A-Za-z\s]*"
-                  title="Letters and spaces only"
-                />
-                <input
-                  type="text"
-                  placeholder="Profession"
-                  className="w-full border rounded-lg px-3 py-2"
-                  value={profession}
-                  onChange={(e) => setProfession(e.target.value)}
-                  pattern="[A-Za-z\s]*"
-                  title="Letters and spaces only"
-                />
-              </div>
+              <input
+                type="text"
+                placeholder="Profession"
+                className="w-full border rounded-lg px-3 py-2"
+                value={profession}
+                onChange={(e) => setProfession(e.target.value)}
+                pattern="[A-Za-z\s]*"
+                title="Letters and spaces only"
+              />
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <input
@@ -236,7 +244,6 @@ export default function AuthModal({closeOption}: AuthProp) {
                   className="w-full border rounded-lg px-3 py-2"
                   value={dateofbirth}
                   onChange={(e) => setDateofbirth(e.target.value)}
-                  max={new Date().toISOString().split("T")[0]}
                   required
                 />
               </div>
