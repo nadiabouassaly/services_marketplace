@@ -10,6 +10,7 @@ export function useProfileData(userParam: string) {
   const [services, setServices] = useState<UserService[]>([]);
   const [isOwnProfile, setIsOwnProfile] = useState(true);
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadData() {
@@ -18,6 +19,7 @@ export function useProfileData(userParam: string) {
 
       if (!userId && !userParam) {
         setSignedIn(false);
+        setLoading(false); 
         return;
       }
 
@@ -33,10 +35,11 @@ export function useProfileData(userParam: string) {
       setProfile(profileData);
       setServices(servicesData ?? []);
       setIsOwnProfile(targetUserId === userId);
+      setLoading(false); 
     }
 
     loadData();
   }, [userParam]);
 
-  return { profile, services, isOwnProfile, signedIn };
+  return { profile, services, isOwnProfile, signedIn, loading};
 }

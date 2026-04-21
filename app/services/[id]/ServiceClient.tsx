@@ -12,6 +12,7 @@ import { useProfileData } from "@/hooks/useProfileData";
 import AuthGate from "@/app/auth/components/AuthGate";
 import { supabase } from "@/app/auth/lib/supabase";
 import RequestModal from "@/components/RequestModal";
+import { isComplete } from "@/lib/requestsAPI";
 
 const categoryIcons: Record<string, React.ReactNode> = {
   'Tutoring': <FaBook />,
@@ -29,10 +30,13 @@ export default function ServiceClient({ service, images }: { service: any; image
   const [average, setAverage] = useState(0);
   const [count, setCount] = useState(0);
   const [reviews, setReviews] = useState<Review[]>([]);
-  
-  const {profile, signedIn} = useProfileData("") ;
+  const [statusValue, setStatusValue] = useState<"loading" | "completed" | "not_completed">("loading");
+  const {profile, signedIn, loading} = useProfileData("") ;
 
   useEffect(() => {
+
+    if (loading) return;
+    
     async function fetchReviews() {
       try {
         const res = await getReviewsForService(service.services_id);
@@ -45,7 +49,24 @@ export default function ServiceClient({ service, images }: { service: any; image
     }
     if (service?.services_id) fetchReviews();
 
-  }, [service?.services_id]);
+    async function getStatus() {
+      const data = await isComplete(service.services_id, profile?.userprofile_id || "");
+
+      if (data?.status === "completed") {
+        setStatusValue("completed");
+      } else {
+        setStatusValue("not_completed");
+      }
+    }
+
+    if (profile?.userprofile_id) {
+    getStatus();
+    } else {
+    // No user logged in, just stop loading
+    setStatusValue("not_completed");
+    }
+
+  }, [loading, profile?.userprofile_id, service.services_id]);
 
   if (!service) return <p className={styles.notFound}>Service Not Found :(</p>;
 
@@ -98,17 +119,20 @@ export default function ServiceClient({ service, images }: { service: any; image
 
           <p className="text-lg text-black leading-relaxed mb-6">{service.description}</p>
 
-           {profile && profile.userprofile_id != service.userprofile_id &&<div className="flex gap-3 mt-6">
-            <button
+           {profile && profile.userprofile_id != service.userprofile_id && statusValue != "loading" && !loading && <div className="flex gap-3 mt-6">
+            
+            {statusValue == "completed" && <button
               onClick={() => setShowReviewModal(true)}
               className="flex-1 px-4 py-2 rounded-md border border-[#0a74ff] text-[#0a74ff] bg-white hover:bg-blue-50 transition-colors duration-300 ease-in-out">
               Review
-            </button>
-            <button 
+            </button>}
+
+            {<button 
               onClick={() => setShowRequestModal(true)}
               className="flex-1 px-4 py-2 rounded-md bg-[#0a74ff] text-white hover:bg-[#1166f0] transition-colors duration-300 ease-in-out">
               Request Service
-            </button>
+            </button>}
+
           </div>}
 
           {/* ── Reviews section ── */}
