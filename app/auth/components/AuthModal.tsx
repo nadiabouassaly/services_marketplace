@@ -1,20 +1,21 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { supabase } from "@/app/auth/lib/supabase";
-import { usePathname, useRouter, useSearchParams} from "next/navigation";
-import { useProfileData } from "@/hooks/useProfileData";
+import { usePathname, useRouter} from "next/navigation";
 
 export type AuthProp={
   closeOption: boolean
 }
+
+export const UserContext = createContext(false);
+const SESSION_KEY = "auth_modal_seen"; 
 
 export default function AuthModal({closeOption}: AuthProp) {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstname, setFirstname] = useState("");
-  const [middlename, setMiddlename] = useState("");
   const [lastname, setLastname] = useState("");
   const [profession, setProfession] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -22,13 +23,25 @@ export default function AuthModal({closeOption}: AuthProp) {
   const [skills, setSkills] = useState("");
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(true);
-  const router = useRouter(); 
-  const searchParams = useSearchParams();
-  const path = usePathname() ;
-  
-  const pageParam = searchParams.get("visitor")
-  const {signedIn } = useProfileData("");
+  const [visitor, setVisitor] = useState(false);
 
+  const path = usePathname() ;
+  const router = useRouter();
+
+  const isMainPage = path === "/";
+
+  useEffect(() => {
+    const alreadySeen = sessionStorage.getItem(SESSION_KEY);
+
+    if (alreadySeen && isMainPage) {
+      // Already saw it this session and we're on the main page — don't show
+      setShowModal(false);
+    } else {
+      // First time this session, or not on main page — show it
+      setShowModal(true);
+      sessionStorage.setItem(SESSION_KEY, "true");
+    }
+  }, [isMainPage]);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,8 +59,30 @@ export default function AuthModal({closeOption}: AuthProp) {
         } else {
           alert("Logged in successfully!");
           setShowModal(false);
+          window.location.reload()
         }
       } else {
+        // Check if user is at least 14 years old
+        if (dateofbirth) {
+          const birthDate = new Date(dateofbirth);
+          const today = new Date();
+          const age = today.getFullYear() - birthDate.getFullYear();
+          const monthDiff = today.getMonth() - birthDate.getMonth();
+          
+          if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            // Birthday hasn't occurred yet this year
+            if (age < 14 || (age === 14 && (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())))) {
+              alert("Restricted for people younger than 14 years old");
+              setLoading(false);
+              return;
+            }
+          } else if (age < 14) {
+            alert("Restricted for people younger than 14 years old");
+            setLoading(false);
+            return;
+          }
+        }
+
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
@@ -61,7 +96,6 @@ export default function AuthModal({closeOption}: AuthProp) {
               userprofile_id: data.user.id,
               email: data.user.email,
               firstname: firstname.trim(),
-              middlename: middlename.trim() || null,
               lastname: lastname.trim(),
               profession: profession.trim() || null,
               phoneNumber: phoneNumber.trim(),
@@ -80,10 +114,18 @@ export default function AuthModal({closeOption}: AuthProp) {
             } else {
               alert("Account and profile created successfully!");
               setShowModal(false);
+
+            if(path == "\Profile" || path == "\Post")
+            window.location.reload()
+
             }
           } else {
             alert("Account created successfully!");
             setShowModal(false);
+
+            if(path == "\Profile" || path == "Post")
+            window.location.reload()
+
           }
         }
       }
@@ -95,24 +137,20 @@ export default function AuthModal({closeOption}: AuthProp) {
     }
   };
 
-  useEffect(() => {
-
-    if(path == "/" && signedIn == false && pageParam == null){
-    router.replace('/?page=1&filters=&maxPrice=&search=&visitor=true');
-    }
-
-  }, [pageParam, path, router, signedIn]);
-
   const onClose=()=>{
     setShowModal(false);
-
-    if(path == "/" && signedIn == false && pageParam == null){
-    router.replace('/?page=1&filters=&maxPrice=&search=&visitor=true');
-    }
-
   }
 
   if (!showModal) return null;
+
+  const Visitor = ()=>{
+    setShowModal(false) ;
+    router.push("/")
+    setVisitor(true)
+  }
+
+  if(visitor == true)
+    setShowModal(false)
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -125,7 +163,7 @@ export default function AuthModal({closeOption}: AuthProp) {
         </button>}
 
         {closeOption == false && <button
-          onClick={() =>router.push('/?visitor=true')}
+          onClick={() =>Visitor()}
           className="absolute top-3 right-3 text-gray-500 hover:text-black"
         >
           ✕
@@ -180,26 +218,15 @@ export default function AuthModal({closeOption}: AuthProp) {
                 />
               </div>
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <input
-                  type="text"
-                  placeholder="Middle Name (optional)"
-                  className="w-full border rounded-lg px-3 py-2"
-                  value={middlename}
-                  onChange={(e) => setMiddlename(e.target.value)}
-                  pattern="[A-Za-z\s]*"
-                  title="Letters and spaces only"
-                />
-                <input
-                  type="text"
-                  placeholder="Profession"
-                  className="w-full border rounded-lg px-3 py-2"
-                  value={profession}
-                  onChange={(e) => setProfession(e.target.value)}
-                  pattern="[A-Za-z\s]*"
-                  title="Letters and spaces only"
-                />
-              </div>
+              <input
+                type="text"
+                placeholder="Profession"
+                className="w-full border rounded-lg px-3 py-2"
+                value={profession}
+                onChange={(e) => setProfession(e.target.value)}
+                pattern="[A-Za-z\s]*"
+                title="Letters and spaces only"
+              />
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <input
@@ -217,7 +244,6 @@ export default function AuthModal({closeOption}: AuthProp) {
                   className="w-full border rounded-lg px-3 py-2"
                   value={dateofbirth}
                   onChange={(e) => setDateofbirth(e.target.value)}
-                  max={new Date().toISOString().split("T")[0]}
                   required
                 />
               </div>
