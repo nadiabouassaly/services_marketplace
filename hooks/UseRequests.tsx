@@ -65,6 +65,10 @@ export function useRequests(userId: string | null) {
     setRequests((prev) => prev.filter((r) => r.request_id  !== id));
     await deleteRequest(id);
   }, []);
+
+  const hide = useCallback(async (id: string) => {
+    setRequests((prev) => prev.filter((r) => r.request_id  !== id));
+  }, []);
  
   return {
     requests: filtered,
@@ -75,7 +79,7 @@ export function useRequests(userId: string | null) {
     filterStatus,
     setFilterDirection,
     setFilterStatus,
-    actions: { accept, reject, complete, cancel },
+    actions: { accept, reject, complete, cancel, hide },
     reload: load,
   };
 }

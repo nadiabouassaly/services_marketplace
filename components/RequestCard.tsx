@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react';
+import React, { useState } from 'react';
 import { request } from '@/types/request';
 import { RequestWithService } from '@/lib/requestsAPI';
 
@@ -11,6 +11,7 @@ interface RequestCardProps {
   onReject: (id: string) => void;
   onComplete: (id: string) => void;
   onCancel: (id: string) => void;
+  onHide: (id: string) => void;
 }
 
 const STATUS_STYLES: Record<request['status'], string> = {
@@ -18,6 +19,7 @@ const STATUS_STYLES: Record<request['status'], string> = {
   accepted:  'bg-green-50 text-green-800 border border-green-200',
   completed: 'bg-teal-50 text-teal-800 border border-teal-200',
   rejected:  'bg-red-50 text-red-800 border border-red-200',
+  cancelled : 'bg-gray-50 text-gray-800 border border-gray-200',
 };
 
 const STATUS_LABELS: Record<request['status'], string> = {
@@ -25,19 +27,20 @@ const STATUS_LABELS: Record<request['status'], string> = {
   accepted:  'Accepted',
   completed: 'Completed',
   rejected:  'Rejected',
+  cancelled : 'Cancelled',
 };
 
 function getInitials(firstname: string, lastname: string) {
   return `${firstname?.[0] ?? ''}${lastname?.[0] ?? ''}`.toUpperCase();
 }
 
-export function RequestCard({ item, direction, onAccept, onReject, onComplete, onCancel }: RequestCardProps) {
+export function RequestCard({ item, direction, onAccept, onReject, onComplete, onCancel, onHide }: RequestCardProps) {
   const counterparty = direction === 'received' ? item.requester : item.provider;
   const firstname = counterparty?.firstname ?? '';
   const lastname = counterparty?.lastname ?? '';
   const fullName = `${firstname} ${lastname}`.trim() || 'Unknown';
   const photo = counterparty?.profilePicture;
-
+  const[userNum, setUserNum] = useState(0);
   return (
     <div className={`bg-white rounded-xl border border-gray-200 p-4 hover:border-gray-300 hover:shadow-sm transition-all duration-150 ${direction === 'received' && item.status === 'pending' ? 'border-l-[3px] border-l-blue-500' : ''}`}>
 
@@ -92,6 +95,36 @@ export function RequestCard({ item, direction, onAccept, onReject, onComplete, o
         <div className="mt-3">
           <button onClick={() => onCancel(item.request_id )} className="w-full py-1.5 text-[12px] font-semibold rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
             Cancel request
+          </button>
+        </div>
+      )}
+
+      {direction === 'sent' && item.status === 'completed' && (
+        <div className="mt-auto flex justify-end">
+          <button 
+          className = "text-[10px] font-semibold px-2.5 py-1 rounded-full shrink-0 bg-red-50 text-red-800 border-radius rounded-full border border-red-200 hover:bg-red-200 transition-colors"
+          onClick={() => {
+            onHide(item.request_id)
+            setUserNum(userNum => { const next = userNum + 1;
+              if(next === 2) onCancel(item.request_id); return next; }
+            )
+            }}>
+            delete
+          </button>
+        </div>
+      )}
+
+      {direction === 'received' && item.status === 'completed' && (
+        <div className="mt-auto flex justify-end">
+          <button 
+          className = "text-[10px] font-semibold px-2.5 py-1 rounded-full shrink-0 bg-red-50 text-red-800 border-radius rounded-full border border-red-200 hover:bg-red-200 transition-colors"
+          onClick={() => {
+            onHide(item.request_id)
+            setUserNum(userNum => { const next = userNum + 1;
+              if(next === 2) onCancel(item.request_id); return next; }
+            )
+            }}>
+            delete
           </button>
         </div>
       )}

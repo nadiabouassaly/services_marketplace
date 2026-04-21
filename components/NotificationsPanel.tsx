@@ -151,6 +151,7 @@ export function NotificationsPanel({ isOpen, onClose, userId }: NotificationsPan
                     onReject={actions.reject}
                     onComplete={actions.complete}
                     onCancel={actions.cancel}
+                    onHide={actions.hide} 
                   />
                 );
               })}
