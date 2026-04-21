@@ -4,12 +4,10 @@ import Hero from '../components/Hero';
 import Sidebar from '../components/Sidebar';
 import Card from '../components/Card';
 import ServicesHeader from '../components/ServicesHeader';
-import {UserService, Profile} from '@/types/userService' 
 import {getServiceByCategory} from '@/lib/services'
 import Pagination from '../components/Pagination' ;
-import { Suspense, useContext} from 'react';
-import React from 'react';
-import AuthGate from "./auth/components/AuthGate";
+import { Suspense} from 'react';
+import IsVisitorComponent from "@/components/IsVisitorComponent";
 
 export default async function HomePage({searchParams}: {searchParams: Promise<{ filters?: string; page?: string; maxPrice?: string, search?: string}>}) {
   
@@ -20,8 +18,6 @@ export default async function HomePage({searchParams}: {searchParams: Promise<{ 
   const page = Number(resolvedParams.page) || 1;
   const priceParam = resolvedParams.maxPrice ? Number(resolvedParams.maxPrice) : 100;
   const search = resolvedParams.search ?? ""
-
-  // const visitor = useContext(UserContext) ;
   
   const { services, totalPages } = await getServiceByCategory(filters, page, priceParam, search);
 
@@ -70,7 +66,7 @@ export default async function HomePage({searchParams}: {searchParams: Promise<{ 
         </div>
       </div>
     </div>
-    {visitor == false && <AuthGate closeOption={true}/>}
+    <IsVisitorComponent />
     </Suspense>
   );
 }

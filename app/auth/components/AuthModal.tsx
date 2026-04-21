@@ -2,14 +2,14 @@
 
 import React, { createContext, useEffect, useState } from "react";
 import { supabase } from "@/app/auth/lib/supabase";
-import { usePathname, useRouter, useSearchParams} from "next/navigation";
-import { useProfileData } from "@/hooks/useProfileData";
+import { usePathname, useRouter} from "next/navigation";
 
 export type AuthProp={
   closeOption: boolean
 }
 
-export const UserContext = createContext(false); 
+export const UserContext = createContext(false);
+const SESSION_KEY = "auth_modal_seen"; 
 
 export default function AuthModal({closeOption}: AuthProp) {
   const [isLogin, setIsLogin] = useState(true);
@@ -24,15 +24,25 @@ export default function AuthModal({closeOption}: AuthProp) {
   const [skills, setSkills] = useState("");
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(true);
-  const [visitor, setVisitor] = useState(false) ;
+  const [visitor, setVisitor] = useState(false);
 
-  const router = useRouter(); 
-  const searchParams = useSearchParams();
   const path = usePathname() ;
-  
-  const pageParam = searchParams.get("visitor")
-  const {signedIn } = useProfileData("");
+  const router = useRouter();
 
+  const isMainPage = path === "/";
+
+  useEffect(() => {
+    const alreadySeen = sessionStorage.getItem(SESSION_KEY);
+
+    if (alreadySeen && isMainPage) {
+      // Already saw it this session and we're on the main page — don't show
+      setShowModal(false);
+    } else {
+      // First time this session, or not on main page — show it
+      setShowModal(true);
+      sessionStorage.setItem(SESSION_KEY, "true");
+    }
+  }, [isMainPage]);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -110,17 +120,20 @@ export default function AuthModal({closeOption}: AuthProp) {
 
   const onClose=()=>{
     setShowModal(false);
-
-    if(path == "/" && signedIn == false && pageParam == null){
-    router.replace('/?page=1&filters=&maxPrice=&search=&visitor=true');
-    }
-
   }
 
   if (!showModal) return null;
 
+  const Visitor = ()=>{
+    setShowModal(false) ;
+    router.push("/")
+    setVisitor(true)
+  }
+
+  if(visitor == true)
+    setShowModal(false)
+
   return (
-    <UserContext.Provider value={visitor}>
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white w-full max-w-md rounded-2xl shadow-xl p-6 relative">
         {closeOption == true && <button
@@ -131,7 +144,7 @@ export default function AuthModal({closeOption}: AuthProp) {
         </button>}
 
         {closeOption == false && <button
-          onClick={() =>setVisitor(true)}
+          onClick={() =>Visitor()}
           className="absolute top-3 right-3 text-gray-500 hover:text-black"
         >
           ✕
@@ -255,6 +268,5 @@ export default function AuthModal({closeOption}: AuthProp) {
         </button>
       </div>
     </div>
-    </UserContext.Provider>
   );
 }
