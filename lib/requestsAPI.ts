@@ -95,5 +95,15 @@ export async function deleteNotification(id: string){
   else{
     await supabase.from('requests').delete().eq('request_id', id)
   }
-  
+
+}
+
+export async function isComplete(id: string, user_id: string){
+
+  console.log("test")
+
+  const {data, error} = await supabase.from('requests').select('status').eq('service_id', id).eq('requester_id', user_id).single()
+  console.log(data)
+  console.log(error)
+  return data;
 }
