@@ -65,14 +65,11 @@ console.log('requests:', requests, 'error:', error);
   }));
 }
  
-export async function updateRequestStatus(
-  id: string,
-  status: request['status']
-): Promise<void> {
+export async function updateRequestStatus(id: string, status: request['status']): Promise<void> {
   const { error } = await supabase
     .from('requests')
     .update({ status })
-    .eq('id', id);
+    .eq('request_id', id);
  
   if (error) throw new Error(error.message);
 }
