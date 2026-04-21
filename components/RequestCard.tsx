@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { request } from '@/types/request';
-import { RequestWithService } from '@/lib/requestsAPI';
+import { deleteNotification, RequestWithService } from '@/lib/requestsAPI';
 
 interface RequestCardProps {
   item: RequestWithService;
@@ -40,7 +40,6 @@ export function RequestCard({ item, direction, onAccept, onReject, onComplete, o
   const lastname = counterparty?.lastname ?? '';
   const fullName = `${firstname} ${lastname}`.trim() || 'Unknown';
   const photo = counterparty?.profilePicture;
-  const[userNum, setUserNum] = useState(0);
   return (
     <div className={`bg-white rounded-xl border border-gray-200 p-4 hover:border-gray-300 hover:shadow-sm transition-all duration-150 ${direction === 'received' && item.status === 'pending' ? 'border-l-[3px] border-l-blue-500' : ''}`}>
 
@@ -103,12 +102,9 @@ export function RequestCard({ item, direction, onAccept, onReject, onComplete, o
         <div className="mt-auto flex justify-end">
           <button 
           className = "text-[10px] font-semibold px-2.5 py-1 rounded-full shrink-0 bg-red-50 text-red-800 border-radius rounded-full border border-red-200 hover:bg-red-200 transition-colors"
-          onClick={() => {
+          onClick={() => 
             onHide(item.request_id)
-            setUserNum(userNum => { const next = userNum + 1;
-              if(next === 2) onCancel(item.request_id); return next; }
-            )
-            }}>
+            }>
             delete
           </button>
         </div>
@@ -118,12 +114,9 @@ export function RequestCard({ item, direction, onAccept, onReject, onComplete, o
         <div className="mt-auto flex justify-end">
           <button 
           className = "text-[10px] font-semibold px-2.5 py-1 rounded-full shrink-0 bg-red-50 text-red-800 border-radius rounded-full border border-red-200 hover:bg-red-200 transition-colors"
-          onClick={() => {
+          onClick={() => 
             onHide(item.request_id)
-            setUserNum(userNum => { const next = userNum + 1;
-              if(next === 2) onCancel(item.request_id); return next; }
-            )
-            }}>
+            }>
             delete
           </button>
         </div>

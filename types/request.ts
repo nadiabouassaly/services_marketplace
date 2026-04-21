@@ -8,5 +8,6 @@ export type request = {
     duration_requested: string;
     communication_method : string;
     status: "cancelled" | "pending" | "accepted" | "rejected" | "completed";
-    created_at : string
+    created_at : string;
+    hidden : boolean
 }

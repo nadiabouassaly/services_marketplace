@@ -2,7 +2,7 @@
  
 import { useCallback, useEffect, useState } from 'react';
 import { request } from '@/types/request';
-import { fetchUserRequests, updateRequestStatus, deleteRequest, RequestWithService } from '@/lib/requestsAPI';
+import { fetchUserRequests, updateRequestStatus, deleteRequest, RequestWithService, deleteNotification } from '@/lib/requestsAPI';
  
 type FilterDirection = 'all' | 'received' | 'sent';
 type FilterStatus = 'all' | request['status'];
@@ -68,6 +68,7 @@ export function useRequests(userId: string | null) {
 
   const hide = useCallback(async (id: string) => {
     setRequests((prev) => prev.filter((r) => r.request_id  !== id));
+    await deleteNotification(id);
   }, []);
  
   return {

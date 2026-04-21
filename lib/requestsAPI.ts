@@ -84,11 +84,12 @@ export async function deleteRequest(id: string): Promise<void> {
   if (error) throw new Error(error.message);
 }
 
-export async function deleteNotification(id: string){
-  
-  const deletedFrom = await supabase.from('requests').select('hidden').eq('request_id', id) ;
+export async function deleteNotification(id: string): Promise<void> {
+  const { data, error } = await supabase.from('requests').select('hidden').eq('request_id', id).single() ;
 
-  if(deletedFrom == null){
+  if(!data || error) return; 
+
+  if(data.hidden === false){
     await supabase.from('requests').update({hidden: true}).eq('request_id', id)
   }
 
