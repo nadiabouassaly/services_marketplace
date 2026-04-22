@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { request } from '@/types/request';
 import { deleteNotification, RequestWithService } from '@/lib/requestsAPI';
+import {CancelCheckModal } from './CancelCheckModal'
+
 
 interface RequestCardProps {
   item: RequestWithService;
@@ -35,6 +37,7 @@ function getInitials(firstname: string, lastname: string) {
 }
 
 export function RequestCard({ item, direction, onAccept, onReject, onComplete, onCancel, onHide }: RequestCardProps) {
+  const[cancelModal, showCancelModal] = useState(false);
   const counterparty = direction === 'received' ? item.requester : item.provider;
   const firstname = counterparty?.firstname ?? '';
   const lastname = counterparty?.lastname ?? '';
@@ -92,7 +95,7 @@ export function RequestCard({ item, direction, onAccept, onReject, onComplete, o
 
       {direction === 'sent' && item.status === 'pending' && (
         <div className="mt-3">
-          <button onClick={() => onCancel(item.request_id )} className="w-full py-1.5 text-[12px] font-semibold rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
+          <button onClick={() => showCancelModal(true)} className="w-full py-1.5 text-[12px] font-semibold rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
             Cancel request
           </button>
         </div>
@@ -130,6 +133,10 @@ export function RequestCard({ item, direction, onAccept, onReject, onComplete, o
             </button>
           )}
         </div>
+      )}
+      {cancelModal && (
+        <CancelCheckModal
+        onConfirm={() => onCancel(item.request_id)}/>
       )}
     </div>
   );
