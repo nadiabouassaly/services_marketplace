@@ -9,10 +9,6 @@ import { getNumberOfServicesById} from "@/lib/services";
 import { supabase } from "@/app/auth/lib/supabase";
 import { FaUser } from "react-icons/fa"
 
-type User = {
-  id: string
-}
-
 export function ProfileIcon({ url }: { url?: string }) {
   return (
     <div className="w-[120px] h-[120px] rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
@@ -51,9 +47,9 @@ export default function InfoComponent(profile: InfoProp){
     const str = date.toLocaleDateString("en-US", {year: "numeric",month: "long",day: "numeric"});
 
     const phoneNumber = useProfile.phoneNumber;
-    const index = phoneNumber.indexOf(" ");
-    const areaCode = index !== -1 ? phoneNumber.substring(0, index) : phoneNumber.substring(0, 3);
-    const number = index !== -1 ? phoneNumber.substring(index + 1) : phoneNumber.substring(3);
+    const index = phoneNumber.indexOf(" ")
+    const areaCode = phoneNumber.substring(0, index);
+    const number = phoneNumber.substring(index+1);
     
     const today = new Date() ;
     const age = today.getFullYear() - date.getFullYear() ;
@@ -131,7 +127,7 @@ export default function InfoComponent(profile: InfoProp){
 
     areaCode: z.string()
     .min(1, "Please enter a valid area code.")
-    .regex(/^\d$/, "Please enter a valid area code."),
+    .regex(/^\+?\d+$/, "Please enter a valid area code."),
     email: z.string()
     .min(1, "Please fill all fields marked with (*)")
     .email("Please enter a valid email address."),
