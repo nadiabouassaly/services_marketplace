@@ -7,7 +7,7 @@ import ServicesHeader from '../components/ServicesHeader';
 import {getServiceByCategory} from '@/lib/services'
 import Pagination from '../components/Pagination' ;
 import { Suspense} from 'react';
-import IsVisitorComponent from "@/components/IsVisitorComponent";
+import AuthGate from "./auth/components/AuthGate";
 
 export default async function HomePage({searchParams}: {searchParams: Promise<{ filters?: string; page?: string; maxPrice?: string, search?: string}>}) {
   
@@ -66,7 +66,7 @@ export default async function HomePage({searchParams}: {searchParams: Promise<{ 
         </div>
       </div>
     </div>
-    <IsVisitorComponent />
+    <AuthGate closeOption={true} />
     </Suspense>
   );
 }
