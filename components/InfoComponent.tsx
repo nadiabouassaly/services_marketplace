@@ -132,7 +132,7 @@ export default function InfoComponent(profile: InfoProp){
 
     areaCode: z.string()
     .min(1, "Please enter a valid area code.")
-    .max(3, "Area code must be 1-3 digits")
+    .max(4, "Area code must be 1-3 digits")
     .regex(/^\d+$/, "Please enter a valid area code."),
     email: z.string()
     .min(1, "Please fill all fields marked with (*)")
