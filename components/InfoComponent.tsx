@@ -9,7 +9,6 @@ import { getNumberOfServicesById} from "@/lib/services";
 import { supabase } from "@/app/auth/lib/supabase";
 import { FaUser } from "react-icons/fa"
 
-
 type User = {
   id: string
 }
