@@ -92,6 +92,7 @@ export async function getProfileByID(id: string){
 export async function deleteServiceByID(id: string){
     const {data, error} = await supabase.from('services').delete().eq('services_id', id);
 
+    console.log("DELETE RESULT:", { data, error });
     return error ;
 }
 

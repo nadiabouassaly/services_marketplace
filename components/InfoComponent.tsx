@@ -419,6 +419,7 @@ export default function InfoComponent(profile: InfoProp){
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-[900px] ml-4 mt-3">
             {services.map((card) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const primaryImage = card.images?.find((img: any) => img.is_primary)?.file_path
                 ?? card.images?.[0]?.file_path
                 ?? null;
