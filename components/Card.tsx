@@ -120,6 +120,7 @@ export default function Card({ id, name, description, price, category, editing, 
 
     </div>
     {editing && deleted == false && <button style={{marginLeft:"25px", marginTop:"6px", color:"red"}} onClick={()=>deleteService(id, name)}>delete</button>}
+    {editing && deleted == true && <button style={{marginLeft:"25px", marginTop:"6px", color:"red", visibility:"hidden"}}>delete</button>}
     </div>
   );
 }
