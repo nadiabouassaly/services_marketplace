@@ -52,9 +52,9 @@ export default function InfoComponent(profile: InfoProp){
     const str = date.toLocaleDateString("en-US", {year: "numeric",month: "long",day: "numeric"});
 
     const phoneNumber = useProfile.phoneNumber;
-    const index = phoneNumber.indexOf(" ")
-    const areaCode = phoneNumber.substring(0, index);
-    const number = phoneNumber.substring(index+1);
+    const index = phoneNumber.indexOf(" ");
+    const areaCode = index !== -1 ? phoneNumber.substring(0, index) : phoneNumber.substring(0, 3);
+    const number = index !== -1 ? phoneNumber.substring(index + 1) : phoneNumber.substring(3);
     
     const today = new Date() ;
     const age = today.getFullYear() - date.getFullYear() ;
@@ -132,7 +132,8 @@ export default function InfoComponent(profile: InfoProp){
 
     areaCode: z.string()
     .min(1, "Please enter a valid area code.")
-    .regex(/^\+?\d+$/, "Please enter a valid area code."),
+    .max(3, "Area code must be 1-3 digits")
+    .regex(/^\d+$/, "Please enter a valid area code."),
     email: z.string()
     .min(1, "Please fill all fields marked with (*)")
     .email("Please enter a valid email address."),

@@ -19,6 +19,8 @@ export default function AuthModal({closeOption}: AuthProp) {
   const [lastname, setLastname] = useState("");
   const [profession, setProfession] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [areaCode, setAreaCode] = useState("");
+  const [areaCodeWarning, setAreaCodeWarning] = useState("");
   const [dateofbirth, setDateofbirth] = useState("");
   const [skills, setSkills] = useState("");
   const [loading, setLoading] = useState(false);
@@ -62,6 +64,13 @@ export default function AuthModal({closeOption}: AuthProp) {
           window.location.reload()
         }
       } else {
+        // Validate area code
+        if (areaCode && (!/^\d+$/.test(areaCode) || areaCode.length < 1 || areaCode.length > 3)) {
+          alert("Area code must contain only digits and be 1 to 3 digits");
+          setLoading(false);
+          return;
+        }
+
         // Check if user is at least 14 years old
         if (dateofbirth) {
           const birthDate = new Date(dateofbirth);
@@ -92,13 +101,16 @@ export default function AuthModal({closeOption}: AuthProp) {
           alert(error.message);
         } else {
           if (data?.user) {
+            // Combine area code and phone number
+            const combinedPhoneNumber = areaCode + " " + phoneNumber;
+
             const profileData = {
               userprofile_id: data.user.id,
               email: data.user.email,
               firstname: firstname.trim(),
               lastname: lastname.trim(),
               profession: profession.trim() || null,
-              phoneNumber: phoneNumber.trim(),
+              phoneNumber: combinedPhoneNumber,
               dateofbirth: dateofbirth,
               skills: skills
                 .split(",")
@@ -231,6 +243,24 @@ export default function AuthModal({closeOption}: AuthProp) {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <input
                   type="tel"
+                  placeholder="Area Code"
+                  className="w-full border rounded-lg px-3 py-2"
+                  value={areaCode}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (/^\d*$/.test(value) && value.length >= 0 && value.length <= 3) {
+                      setAreaCode(value);
+                      setAreaCodeWarning("");
+                    } else {
+                      setAreaCodeWarning("Area code must contain only digits (1-3 digits)");
+                    }
+                  }}
+                  maxLength={3}
+                  pattern="\d*"
+                  title="Digits only, up to 3 characters"
+                />
+                <input
+                  type="tel"
                   placeholder="Phone number"
                   className="w-full border rounded-lg px-3 py-2"
                   value={phoneNumber}
@@ -239,14 +269,18 @@ export default function AuthModal({closeOption}: AuthProp) {
                   title="Digits only, 7 to 15 characters"
                   required
                 />
-                <input
-                  type="date"
-                  className="w-full border rounded-lg px-3 py-2"
-                  value={dateofbirth}
-                  onChange={(e) => setDateofbirth(e.target.value)}
-                  required
-                />
               </div>
+              {areaCodeWarning && (
+                <div className="text-red-500 text-sm">{areaCodeWarning}</div>
+              )}
+
+              <input
+                type="date"
+                className="w-full border rounded-lg px-3 py-2"
+                value={dateofbirth}
+                onChange={(e) => setDateofbirth(e.target.value)}
+                required
+              />
 
               <input
                 type="text"
