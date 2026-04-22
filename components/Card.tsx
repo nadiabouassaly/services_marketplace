@@ -16,7 +16,7 @@ type CardProps = {
 };
 
 
-// Map category to icon
+// Map category to icon.
 const categoryIcons: Record<string, React.ReactNode> = {
   'tutoring': <FaBook />,
   'elderly care': <FaUser />,
