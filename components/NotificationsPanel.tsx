@@ -43,7 +43,6 @@ export function NotificationsPanel({ isOpen, onClose, userId }: NotificationsPan
 
   const panelRef = useRef<HTMLDivElement>(null);
 
-
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', handler);

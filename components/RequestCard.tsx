@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { request } from '@/types/request';
 import { deleteNotification, RequestWithService } from '@/lib/requestsAPI';
 import {CancelCheckModal } from './CancelCheckModal'
+import { getProfileByID } from '@/lib/services';
+import UseProfile from '@/hooks/UseProfile';
 
 
 interface RequestCardProps {
@@ -43,6 +45,9 @@ export function RequestCard({ item, direction, onAccept, onReject, onComplete, o
   const lastname = counterparty?.lastname ?? '';
   const fullName = `${firstname} ${lastname}`.trim() || 'Unknown';
   const photo = counterparty?.profilePicture;
+
+  const {providerProfile} = UseProfile(item.provider_id);;
+
   return (
     <div className={`bg-white rounded-xl border border-gray-200 p-4 hover:border-gray-300 hover:shadow-sm transition-all duration-150 ${direction === 'received' && item.status === 'pending' ? 'border-l-[3px] border-l-blue-500' : ''}`}>
 
@@ -70,6 +75,12 @@ export function RequestCard({ item, direction, onAccept, onReject, onComplete, o
       {item.message && (
         <p className="text-[12px] text-gray-400 mb-3 leading-snug line-clamp-2">{item.message}</p>
       )}
+      
+      {/* Contact info if accepted */}
+      {(item.status == 'accepted'|| item.status == 'completed') && providerProfile != null && direction == 'sent' && <div>
+        <h1 className="text-[13px] font-medium leading-snug font-bold" >Contact on</h1>
+        <p className="text-[12px] text-gray-400 mb-5 leading-snug line-clamp-2" style={{color: "#007BFF", textDecoration: (item.communication_method == "email" ? "underline": "")}}>{item.communication_method == "email" ? providerProfile.email : providerProfile.phoneNumber}</p>
+      </div>}
 
       {/* Status + budget */}
       <div className="flex items-center justify-between">
