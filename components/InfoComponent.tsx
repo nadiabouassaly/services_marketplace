@@ -135,13 +135,11 @@ export default function InfoComponent(profile: InfoProp){
     skills: z.array(
     z.string()
     .trim()
-    .min(2, "Too short")
-    .regex(lettersOnly, "Only letters allowed")
     ),
 
     profession: z.string()
     .trim()
-    .min(2,"Please fill all fields marked with (*)")
+    .min(2, "Please enter a valid profession.")
     .regex(lettersOnly, "Please enter a valid profession.")
     .optional()
     .or(z.literal("")),
@@ -404,7 +402,7 @@ export default function InfoComponent(profile: InfoProp){
                     {useSkills.length == 0 && <div>
                     <p style={{color: "#4d5055", fontSize: "12px"}}>SKILLS</p>
                     {useEditing == false && <p style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "11px", minHeight: "24px"}}>{(useProfile.skills != null) ? useProfile.skills : " "}</p>}
-                    {useEditing == true && <input name="skills" onChange={(e) => {setProfile({ ...useProfile, profession: e.target.value })} } style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "11px", resize:"none"}} defaultValue={(useProfile.skills!= null) ? useProfile.skills : " "}/>}
+                    {useEditing == true && <input name="skills" onChange={(e) =>setSkills([e.target.value]) } style={{borderStyle: "solid", backgroundColor: "#c6e1fe80", paddingLeft: "7px", width:"125px", marginBottom: "11px", resize:"none"}} defaultValue={(useProfile.skills!= null) ? useProfile.skills : " "}/>}
                     </div> }
 
                     {useSkills.length > 0 && <Skills props={useSkills} skillsArray={useSkills} setSkillsArray={setSkills}/>}
