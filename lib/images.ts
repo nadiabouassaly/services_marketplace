@@ -45,9 +45,12 @@ export async function addImages(serviceId: string, urls: string[], userId: strin
   const { data, error } = await supabase.from("images").insert(rows);
 
   if (error) {
-    console.error(error);
-    throw error;
-  }
+  console.error('message:', error.message);
+  console.error('details:', error.details);
+  console.error('hint:', error.hint);
+  console.error('code:', error.code);
+  throw error;
+}
 
   return data;
 }
