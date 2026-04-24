@@ -10,6 +10,8 @@ import { useProfileData } from "../hooks/useProfileData";
 export default function RequestServiceModal({ service, currentUser, onClose }: { service: any; currentUser: string; onClose: () => void }) {
   const [modalNum, setModalNum] = useState(1);
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
+
   const [form, setForm] = useState({
   message: "",
   budget: "",
@@ -28,12 +30,21 @@ export default function RequestServiceModal({ service, currentUser, onClose }: {
     return;
   }
 
-  const { error } = await createRequest({ service, currentUser: { id: profile?.userprofile_id || null }, form });
-  if (error) {
-    alert(JSON.stringify(error));
-  } else {
-    setModalNum(2);
+  if(form.message.length > 250){
+    setError("Please limit the description to 250 characters.");
   }
+
+  else{
+    setError("");
+    const { error } = await createRequest({ service, currentUser: { id: profile?.userprofile_id || null }, form });
+    if (error) {
+      alert(JSON.stringify(error));
+    } else {
+      setModalNum(2);
+    }
+
+    }
+
 };
   return (
     <div
@@ -46,13 +57,13 @@ export default function RequestServiceModal({ service, currentUser, onClose }: {
         onClick={(e) => e.stopPropagation()}
       >
         
-
         {modalNum === 1 && (
         <div>
-            <div className="flex justify-between items-start mb-5">
-          <h2 className="text-base font-semibold">Request this service</h2>
+            <div className="flex justify-between items-start mb-2">
+            <h2 className="text-base font-semibold">Request this service</h2>
         </div>
         <div>
+            {error != "" && <h2 style = {{color: "red", fontSize:"14px", marginBottom:"3px"}}>{error}</h2>}
             <h2 className="font-semibold text-sm">What do you need?</h2>
          <textarea
          value={form.message}

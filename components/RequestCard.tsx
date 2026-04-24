@@ -73,7 +73,7 @@ export function RequestCard({ item, direction, onAccept, onReject, onComplete, o
 
       {/* Message preview */}
       {item.message && (
-        <p className="text-[12px] text-gray-400 mb-3 leading-snug line-clamp-2">{item.message}</p>
+        <p className="text-[12px] text-gray-400 mb-3 leading-snug">{item.message}</p>
       )}
       
       {/* Contact info if accepted */}
