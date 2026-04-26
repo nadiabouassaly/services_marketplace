@@ -147,7 +147,7 @@ export function AugmentedView({ item, direction, onAccept, onReject, onComplete,
             <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${STATUS_STYLES[item.status]}`}>
               {STATUS_LABELS[item.status]}
             </span>
-            {item.budget && (
+            {direction === 'sent' && item.budget && (
               <span className="text-[13px] font-semibold text-gray-900">${item.budget}</span>
             )}
           </div>
