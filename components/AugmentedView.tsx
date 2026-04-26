@@ -119,8 +119,8 @@ export function AugmentedView({ item, direction, onAccept, onReject, onComplete,
           )}
           </div>
           )}
-          {direction === 'sent' && item.status === 'accepted' && (
-            <span className="text-sm font-semibold text-gray-900">
+          { item.send_message  && (
+            <span className="text-sm font-semibold text-gray-900 ml-auto">
             {item.send_message}
             </span>
           )}
