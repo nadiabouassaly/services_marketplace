@@ -46,15 +46,15 @@ export function useRequests(userId: string | null) {
   ).length;
  
 
-  const accept = useCallback(async (id: string) => {
-    setRequests((prev) => prev.map((r) => r.request_id  === id ? { ...r, status: 'accepted' } : r));
-    await updateRequestStatus(id, 'accepted');
-  }, []);
+  const accept = useCallback(async (id: string, send_message?: string) => {
+  setRequests((prev) => prev.map((r) => r.request_id === id ? { ...r, status: 'accepted' } : r));
+  await updateRequestStatus(id, 'accepted', send_message);
+}, []);
  
-  const reject = useCallback(async (id: string) => {
-    setRequests((prev) => prev.map((r) => r.request_id  === id ? { ...r, status: 'rejected' } : r));
-    await updateRequestStatus(id, 'rejected');
-  }, []);
+  const reject = useCallback(async (id: string, send_message?: string) => {
+  setRequests((prev) => prev.map((r) => r.request_id === id ? { ...r, status: 'rejected' } : r));
+  await updateRequestStatus(id, 'rejected', send_message);
+}, []);
  
   const complete = useCallback(async (id: string) => {
     setRequests((prev) => prev.map((r) => r.request_id  === id ? { ...r, status: 'completed' } : r));

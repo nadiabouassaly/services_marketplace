@@ -9,5 +9,6 @@ export type request = {
     communication_method : string;
     status: "cancelled" | "pending" | "accepted" | "rejected" | "completed";
     created_at : string;
-    hidden : boolean
+    hidden : boolean;
+    send_message : string
 }

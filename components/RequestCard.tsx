@@ -6,7 +6,7 @@ import { deleteNotification, RequestWithService } from '@/lib/requestsAPI';
 import {CancelCheckModal } from './CancelCheckModal'
 import { getProfileByID } from '@/lib/services';
 import UseProfile from '@/hooks/UseProfile';
-
+import { AugmentedView } from './AugmentedView';
 
 interface RequestCardProps {
   item: RequestWithService;
@@ -45,12 +45,14 @@ export function RequestCard({ item, direction, onAccept, onReject, onComplete, o
   const lastname = counterparty?.lastname ?? '';
   const fullName = `${firstname} ${lastname}`.trim() || 'Unknown';
   const photo = counterparty?.profilePicture;
-
+  const[augmentedView, openAugmentedView] = useState(false);
   const {providerProfile} = UseProfile(item.provider_id);;
 
   return (
-    <div className={`bg-white rounded-xl border border-gray-200 p-4 hover:border-gray-300 hover:shadow-sm transition-all duration-150 ${direction === 'received' && item.status === 'pending' ? 'border-l-[3px] border-l-blue-500' : ''}`}>
-
+    <div>
+    
+    <div  onClick={() => openAugmentedView(true)} className={`bg-white rounded-xl border border-gray-200 p-4 hover:border-gray-300 hover:shadow-sm transition-all duration-150 ${direction === 'received' && item.status === 'pending' ? 'border-l-[3px] border-l-blue-500' : ''}`}>
+  
       {/* Top row */}
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="flex items-center gap-2.5">
@@ -94,7 +96,7 @@ export function RequestCard({ item, direction, onAccept, onReject, onComplete, o
 
       {/* Actions */}
       {direction === 'received' && item.status === 'pending' && (
-        <div className="flex gap-2 mt-3">
+        <div className="flex gap-2 mt-3" onClick={(e) => e.stopPropagation()}>
           <button onClick={() => onAccept(item.request_id )} className="flex-1 py-1.5 text-[12px] font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors">
             Accept
           </button>
@@ -105,7 +107,7 @@ export function RequestCard({ item, direction, onAccept, onReject, onComplete, o
       )}
 
       {direction === 'sent' && item.status === 'pending' && (
-        <div className="mt-3">
+        <div className="mt-3" onClick={(e) => e.stopPropagation()}>
           <button onClick={() => showCancelModal(true)} className="w-full py-1.5 text-[12px] font-semibold rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
             Cancel request
           </button>
@@ -113,7 +115,7 @@ export function RequestCard({ item, direction, onAccept, onReject, onComplete, o
       )}
 
       {direction === 'sent' && item.status === 'completed' && (
-        <div className="mt-auto flex justify-end">
+        <div className="mt-auto flex justify-end" onClick={(e) => e.stopPropagation()}>
           <button 
           className = "text-[10px] font-semibold px-2.5 py-1 rounded-full shrink-0 bg-red-50 text-red-800 border-radius rounded-full border border-red-200 hover:bg-red-200 transition-colors"
           onClick={() => 
@@ -125,7 +127,7 @@ export function RequestCard({ item, direction, onAccept, onReject, onComplete, o
       )}
 
       {direction === 'received' && item.status === 'completed' && (
-        <div className="mt-auto flex justify-end">
+        <div className="mt-auto flex justify-end" onClick={(e) => e.stopPropagation()}>
           <button 
           className = "text-[10px] font-semibold px-2.5 py-1 rounded-full shrink-0 bg-red-50 text-red-800 border-radius rounded-full border border-red-200 hover:bg-red-200 transition-colors"
           onClick={() => 
@@ -137,7 +139,7 @@ export function RequestCard({ item, direction, onAccept, onReject, onComplete, o
       )}
 
       {item.status === 'accepted' && (
-        <div className="flex gap-2 mt-3">
+        <div className="flex gap-2 mt-3" onClick={(e) => e.stopPropagation()}>
           {direction === 'received' && (
             <button onClick={() => onComplete(item.request_id )} className="flex-1 py-1.5 text-[12px] font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors">
               Mark complete
@@ -145,10 +147,24 @@ export function RequestCard({ item, direction, onAccept, onReject, onComplete, o
           )}
         </div>
       )}
-      {cancelModal && (
+      
+    </div>
+    {cancelModal && (
         <CancelCheckModal
         onConfirm={() => onCancel(item.request_id)}
         onClosePanel={() => showCancelModal(false)}/>
+      )}
+
+    {augmentedView && (
+        <AugmentedView
+        item={item}
+        direction={direction}
+        onAccept={onAccept}
+        onReject={onReject}
+        onComplete={onComplete}
+        onCancel={onCancel}
+        onHide={onHide}
+        onClosePanel={() => openAugmentedView(false)}/>
       )}
     </div>
   );
