@@ -147,7 +147,8 @@ export function RequestCard({ item, direction, onAccept, onReject, onComplete, o
       )}
       {cancelModal && (
         <CancelCheckModal
-        onConfirm={() => onCancel(item.request_id)}/>
+        onConfirm={() => onCancel(item.request_id)}
+        onClosePanel={() => showCancelModal(false)}/>
       )}
     </div>
   );

@@ -1,14 +1,18 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 
-interface CancelCheckModalProps {
-  onConfirm: () => void;
-}
-export function CancelCheckModal({onConfirm}: CancelCheckModalProps) {
- const [isOpen, setIsOpen] = useState(true);
-  const handleConfirm = () => {
-    onConfirm();
+  interface CancelCheckModalProps {
+    onConfirm: () => void;
+    onClosePanel: () => void;
+  }
+  export function CancelCheckModal({onConfirm, onClosePanel }: CancelCheckModalProps) {
+  const [isOpen, setIsOpen] = useState(true);
+    const handleConfirm = () => {
+      onConfirm();
   };
+  const handleClosePanel = () => {
+    onClosePanel();
+  }
   return (
     <>
     {isOpen && createPortal(
@@ -27,7 +31,7 @@ export function CancelCheckModal({onConfirm}: CancelCheckModalProps) {
             <button onClick={handleConfirm} className="flex-1 py-1.5 w-full font-semibold rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors">
             Confirm
           </button>
-          <button onClick={() => setIsOpen(false)} className="flex-1 py-1.5  w-full font-semibold rounded-lg border border-red-200 text-red-700 hover:bg-red-50 transition-colors">
+          <button onClick={handleClosePanel} className="flex-1 py-1.5  w-full font-semibold rounded-lg border border-red-200 text-red-700 hover:bg-red-50 transition-colors">
             Cancel
           </button>
           </div>
@@ -35,6 +39,6 @@ export function CancelCheckModal({onConfirm}: CancelCheckModalProps) {
         </>,
         document.body
     )}
-    </>
+    </> 
   );
 }
