@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { timeAgo } from "@/lib/services";
 import styles from "./page.module.css";
 import ImageCarousel from "@/components/ImageCarousel";
@@ -13,6 +13,7 @@ import AuthGate from "@/app/auth/components/AuthGate";
 import { supabase } from "@/app/auth/lib/supabase";
 import RequestModal from "@/components/RequestModal";
 import { isComplete } from "@/lib/requestsAPI";
+import { UserContext } from "@/components/RequestModal"
 
 const categoryIcons: Record<string, React.ReactNode> = {
   'Tutoring': <FaBook />,
@@ -30,7 +31,8 @@ export default function ServiceClient({ service, images }: { service: any; image
   const [average, setAverage] = useState(0);
   const [count, setCount] = useState(0);
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [statusValue, setStatusValue] = useState<"loading" | "completed" | "not_completed">("loading");
+  const [statusValue, setStatusValue] = useState<"loading" | "completed" | "not_completed" | "pending" | "accepted">("loading");
+  const [submitted, setSubmitted] = useState(false);
   const {profile, signedIn, loading} = useProfileData("") ;
 
   useEffect(() => {
@@ -54,8 +56,12 @@ export default function ServiceClient({ service, images }: { service: any; image
 
       if (data?.status === "completed") {
         setStatusValue("completed");
-      } else {
-        setStatusValue("not_completed");
+      } else if(data?.status == "pending" || data?.status == "accepted"){
+        setStatusValue(data?.status);
+      }
+
+      else{
+        setStatusValue("not_completed")
       }
     }
 
@@ -68,7 +74,12 @@ export default function ServiceClient({ service, images }: { service: any; image
 
   }, [loading, profile?.userprofile_id, service.services_id]);
 
-  if (!service) return <p className={styles.notFound}>Service Not Found :(</p>;
+  if (!service) return <p className={styles.notFound}>Service Not Found</p>;
+
+  const onSubmit = ()=>{
+    setShowRequestModal(false);
+    setSubmitted(true);
+  }
 
   return (
     <main className="min-h-screen bg-white py-10">
@@ -127,10 +138,15 @@ export default function ServiceClient({ service, images }: { service: any; image
               Review
             </button>}
 
-            {<button 
+            {statusValue != "pending" && statusValue != "accepted" && submitted == false && <button 
               onClick={() => setShowRequestModal(true)}
               className="flex-1 px-4 py-2 rounded-md bg-[#0a74ff] text-white hover:bg-[#1166f0] transition-colors duration-300 ease-in-out">
               Request Service
+            </button>}
+            
+            {(statusValue == "pending" || statusValue == "accepted" || submitted == true) && <button 
+              className="flex-1 px-4 py-2 rounded-md bg-[#0a74ff] text-white hover:bg-[#1166f0] transition-colors duration-300 ease-in-out">
+              Requested Service
             </button>}
 
           </div>}
@@ -191,6 +207,7 @@ export default function ServiceClient({ service, images }: { service: any; image
           service = {service}
           currentUser={profile?.userprofile_id ?? ""}
           onClose={() => setShowRequestModal(false)}
+          onSubmit={onSubmit}
         />
       )}
 

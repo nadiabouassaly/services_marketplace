@@ -5,9 +5,12 @@ import { FaCheck } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import {createRequest} from "@/lib/requestsAPI";
 import { useProfileData } from "../hooks/useProfileData";
+import { createContext } from "react";
+
+export const UserContext = createContext(false) ;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function RequestServiceModal({ service, currentUser, onClose }: { service: any; currentUser: string; onClose: () => void }) {
+export default function RequestServiceModal({ service, currentUser, onClose, onSubmit }: { service: any; currentUser: string; onClose: () => void, onSubmit: ()=> void }) {
   const [modalNum, setModalNum] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
@@ -122,14 +125,6 @@ export default function RequestServiceModal({ service, currentUser, onClose }: {
     {modalNum === 2 && (
   <div className="relative p-6 text-center">
     
-    {/* Close button */}
-    <button
-      onClick={onClose}
-      className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-lg"
-    >
-      ✕
-    </button>
-
     <div className="flex justify-center mb-2">
       <FaCheck className="text-blue-500 text-3xl" />
     </div>
@@ -155,7 +150,7 @@ export default function RequestServiceModal({ service, currentUser, onClose }: {
 
       <button
         className="flex-1 px-3 py-2 rounded-md border border-[#0a74ff] text-[#0a74ff] bg-white hover:bg-blue-50 transition"
-        onClick={onClose}
+        onClick={onSubmit}
       >
         Close
       </button>
