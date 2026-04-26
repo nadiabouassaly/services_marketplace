@@ -138,6 +138,18 @@ export function RequestCard({ item, direction, onAccept, onReject, onComplete, o
         </div>
       )}
 
+      { item.status === 'rejected' && (
+        <div className="mt-auto flex justify-end" onClick={(e) => e.stopPropagation()}>
+          <button 
+          className = "text-[10px] font-semibold px-2.5 py-1 rounded-full shrink-0 bg-red-50 text-red-800 border-radius rounded-full border border-red-200 hover:bg-red-200 transition-colors"
+          onClick={() => 
+            onHide(item.request_id)
+            }>
+            delete
+          </button>
+        </div>
+      )}
+
       {item.status === 'accepted' && (
         <div className="flex gap-2 mt-3" onClick={(e) => e.stopPropagation()}>
           {direction === 'received' && (
