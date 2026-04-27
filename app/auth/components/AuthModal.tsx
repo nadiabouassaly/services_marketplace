@@ -65,8 +65,8 @@ export default function AuthModal({closeOption}: AuthProp) {
         }
       } else {
         // Validate area code
-        if (areaCode && (!/^\d+$/.test(areaCode) || areaCode.length < 1 || areaCode.length > 3)) {
-          alert("Area code must contain only digits and be 1 to 3 digits");
+        if (areaCode && !/^\+\d{1,3}$/.test(areaCode)) {
+          alert("Area code must be + followed by 1 to 3 digits");
           setLoading(false);
           return;
         }
@@ -248,15 +248,15 @@ export default function AuthModal({closeOption}: AuthProp) {
                   value={areaCode}
                   onChange={(e) => {
                     const value = e.target.value;
-                    if (value === "" || value === "+" || /^\+\d+$/.test(value)) {
+                    if (value === "" || value === "+" || /^\+\d{1,3}$/.test(value)) {
                       setAreaCode(value);
                       setAreaCodeWarning("");
                     } else {
-                      setAreaCodeWarning("Area code must start with + followed by digits");
+                      setAreaCodeWarning("Area code must start with + followed by 1-3 digits");
                     }
                   }}
                   maxLength={4}
-                  pattern="\+\\d{1,3}"
+                  pattern="[+][0-9]{1,3}"
                   title="Plus followed by 1-3 digits"
                 />
                 <input
