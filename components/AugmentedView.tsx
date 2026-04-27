@@ -102,9 +102,22 @@ export function AugmentedView({ item, direction, onAccept, onReject, onComplete,
 
           {/* Message preview */}
           {item.message && (
+            <div className="flex items-center gap-2 mt-3 mb-2">
+              <div className="top-2 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-l-8 border-l-blue-500"></div>
             <p className="text-sm text-gray-900 mb-3 mt-2">{item.message}</p>
+            </div>
           )}
 
+          {item.send_message && (
+        <div className="flex justify-end mt-2">
+          <div className="relative text-gray-900 text-sm font-semibold px-3 py-2 rounded-lg max-w-xs">
+            {item.send_message}
+
+            {/* Arrow */}
+            <div className="absolute right-[-6px] top-2 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-r-8 border-r-blue-500"></div>
+          </div>
+        </div>
+      )}
           {/* preview */}
           {direction == 'received' && (
           <div className = "flex items-center gap-2 mt-3 mb-2">
@@ -119,11 +132,7 @@ export function AugmentedView({ item, direction, onAccept, onReject, onComplete,
           )}
           </div>
           )}
-          { item.send_message  && (
-            <span className="text-sm font-semibold text-gray-900 ml-auto">
-            {item.send_message}
-            </span>
-          )}
+          
           {/* Contact info if accepted */}
           {(item.status == 'accepted'|| item.status == 'completed') && providerProfile != null && direction == 'sent' && <div>
             <h1 className="text-[13px] mt-3 font-medium leading-snug font-bold" >Contact on</h1>
