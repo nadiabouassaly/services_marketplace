@@ -248,16 +248,16 @@ export default function AuthModal({closeOption}: AuthProp) {
                   value={areaCode}
                   onChange={(e) => {
                     const value = e.target.value;
-                    if (/^\d*$/.test(value) && value.length >= 0 && value.length <= 3) {
+                    if (value === "" || value === "+" || /^\+\d+$/.test(value)) {
                       setAreaCode(value);
                       setAreaCodeWarning("");
                     } else {
-                      setAreaCodeWarning("Area code must contain only digits (1-3 digits)");
+                      setAreaCodeWarning("Area code must start with + followed by digits");
                     }
                   }}
-                  maxLength={3}
-                  pattern="\d*"
-                  title="Digits only, up to 3 characters"
+                  maxLength={4}
+                  pattern="\+\\d{1,3}"
+                  title="Plus followed by 1-3 digits"
                 />
                 <input
                   type="tel"
